@@ -1,0 +1,26 @@
+{
+  "name": "dispensa-inteligente",
+  "version": "1.0.0",
+  "description": "Adla Eusebio Amancio                 RA - 172610725 Giovani Carvalho dos Santos          RA - 924106807 Jefferson Gomes da Silva             RA - 924200954 Peterson Pereira Pinheiro            RA – 923205352 Thomaz Jefferson de Oliveira Silva   RA - 926116772",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jerfesk/Dispensa-Inteligente.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jerfesk/Dispensa-Inteligente/issues"
+  },
+  "homepage": "https://github.com/Jerfesk/Dispensa-Inteligente#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
