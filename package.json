@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/Jerfesk/Dispensa-Inteligente#readme",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/generative-ai": "^0.11.5",
+    "axios": "^1.15.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   }

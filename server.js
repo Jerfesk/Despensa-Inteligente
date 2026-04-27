@@ -1,40 +1,28 @@
 const express = require('express');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const API_KEY = process.env.GEMINI_API_KEY;
 
 app.get('/receita/:produto', async (req, res) => {
     const produto = req.params.produto;
+    // URL usando v1 e o modelo flash direto
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    const data = {
+        contents: [{ parts: [{ text: `Sugira uma receita com ${produto}. Responda apenas um JSON: {"nome": "string", "ingredientes": [], "preparo": []}` }] }]
+    };
 
     try {
-        // Mudamos para gemini-1.5-flash-latest ou apenas gemini-1.5-flash
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        
-        const prompt = `Aja como um chef. Sugira uma receita para: ${produto}. 
-        Responda apenas em JSON:
-        {
-          "nome": "nome",
-          "ingredientes": [],
-          "preparo": []
-        }`;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        
-        const cleanJson = text.replace(/```json|```/g, "").trim();
+        const response = await axios.post(url, data);
+        const textoIA = response.data.candidates[0].content.parts[0].text;
+        const cleanJson = textoIA.replace(/```json|```/g, "").trim();
         res.json(JSON.parse(cleanJson));
-
     } catch (error) {
-        console.error("ERRO:", error);
-        res.status(500).json({ 
-            erro: "Erro ao chamar a IA", 
-            detalhe: "Tente novamente em alguns segundos ou verifique a chave." 
-        });
+        console.error("ERRO:", error.response ? error.response.data : error.message);
+        res.status(500).json({ erro: "Erro na API", detalhe: "Verifique se a nova chave está ativa." });
     }
 });
 
-
-app.listen(3000, () => console.log("API rodando na porta 3000!"));
+app.listen(3000, () => console.log("Servidor rodando na 3000"));
