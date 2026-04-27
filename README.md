@@ -1,4 +1,4 @@
-# Dispensa-Inteligente
+# Despensa-Inteligente
 Adla Eusebio Amancio                 RA - 172610725
 Giovani Carvalho dos Santos          RA - 924106807
 Jefferson Gomes da Silva             RA - 924200954
