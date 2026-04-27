@@ -36,4 +36,5 @@ app.get('/receita/:produto', async (req, res) => {
     }
 });
 
+
 app.listen(3000, () => console.log("API rodando na porta 3000!"));
