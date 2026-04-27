@@ -6,20 +6,33 @@ const app = express();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.get('/receita/:produto', async (req, res) => {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const produto = req.params.produto;
 
-    const prompt = `Sugira uma receita para usar o produto: ${produto}. 
-    Responda em JSON: { "nome": "", "ingredientes": [], "preparo": [] }`;
-
     try {
+        // Mudamos para gemini-1.5-flash-latest ou apenas gemini-1.5-flash
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        
+        const prompt = `Aja como um chef. Sugira uma receita para: ${produto}. 
+        Responda apenas em JSON:
+        {
+          "nome": "nome",
+          "ingredientes": [],
+          "preparo": []
+        }`;
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        // O Gemini às vezes coloca crases no JSON, este replace limpa isso:
-        const cleanJson = response.text().replace(/```json|```/g, "");
+        const text = response.text();
+        
+        const cleanJson = text.replace(/```json|```/g, "").trim();
         res.json(JSON.parse(cleanJson));
+
     } catch (error) {
-        res.status(500).json({ erro: "Erro ao chamar a IA" });
+        console.error("ERRO:", error);
+        res.status(500).json({ 
+            erro: "Erro ao chamar a IA", 
+            detalhe: "Tente novamente em alguns segundos ou verifique a chave." 
+        });
     }
 });
 
