@@ -3,26 +3,52 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-const API_KEY = process.env.GEMINI_API_KEY;
+// Lembre-se de trocar essa chave se ela for revogada por segurança
+const API_KEY = "AIzaSyCxZyuTVZv0po_AD7xL92sgmTkt5hu0UZw";
 
 app.get('/receita/:produto', async (req, res) => {
     const produto = req.params.produto;
-    // URL usando v1 e o modelo flash direto
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    
+    // ATUALIZADO: Usando o modelo gemini-2.5-flash encontrado na sua lista
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
     const data = {
-        contents: [{ parts: [{ text: `Sugira uma receita com ${produto}. Responda apenas um JSON: {"nome": "string", "ingredientes": [], "preparo": []}` }] }]
+        contents: [{
+            parts: [{
+                text: `Crie uma receita com ${produto}. Responda estritamente apenas um objeto JSON: {"nome": "string", "ingredientes": [], "preparo": []}`
+            }]
+        }],
+        // Configuração extra para garantir que a IA responda em JSON puro
+        generationConfig: {
+            response_mime_type: "application/json"
+        }
     };
 
     try {
         const response = await axios.post(url, data);
-        const textoIA = response.data.candidates[0].content.parts[0].text;
-        const cleanJson = textoIA.replace(/```json|```/g, "").trim();
-        res.json(JSON.parse(cleanJson));
+        
+        // No Gemini 2.5+, a estrutura de resposta permanece similar
+        if (response.data.candidates && response.data.candidates[0].content) {
+            const textoIA = response.data.candidates[0].content.parts[0].text;
+            
+            // Como usamos response_mime_type, a resposta já vem como string JSON limpa
+            res.json(JSON.parse(textoIA));
+        } else {
+            res.status(500).json({ erro: "IA não gerou conteúdo", detalhe: response.data });
+        }
+
     } catch (error) {
-        console.error("ERRO:", error.response ? error.response.data : error.message);
-        res.status(500).json({ erro: "Erro na API", detalhe: "Verifique se a nova chave está ativa." });
+        const mensagemErro = error.response ? error.response.data : error.message;
+        console.error("ERRO DETALHADO:", mensagemErro);
+        
+        res.status(500).json({ 
+            erro: "Falha na resposta do Google", 
+            detalhe: mensagemErro 
+        });
     }
 });
 
-app.listen(3000, () => console.log("Servidor rodando na 3000"));
+app.listen(3000, () => {
+    console.log("✅ Servidor rodando em: http://localhost:3000");
+    console.log("🚀 Teste no Codespace: /receita/ovo (sem os dois pontos)");
+});
