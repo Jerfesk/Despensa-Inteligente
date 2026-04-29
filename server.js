@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const app = express();
 // Lembre-se de trocar essa chave se ela for revogada por segurança
-const API_KEY = "AIzaSyCxZyuTVZv0po_AD7xL92sgmTkt5hu0UZw";
+const API_KEY =  process.env.GEMINI_API_KEY; 
 
 app.get('/receita/:produto', async (req, res) => {
     const produto = req.params.produto;

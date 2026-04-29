@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const app = express();
 // COLE SUA CHAVE DIRETAMENTE AQUI ENTRE AS ASPAS PARA TESTAR:
-const API_KEY = "AIzaSyCxZyuTVZv0po_AD7xL92sgmTkt5hu0UZw";
+const API_KEY = "AIzaSyAr0Aq47EjDnxx8czSw5_y0UdRXltvRU6I";
 
 app.get('/receita/:produto', async (req, res) => {
     const produto = req.params.produto;

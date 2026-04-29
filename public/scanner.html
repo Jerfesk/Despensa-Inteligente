@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Scanner - Despensa Inteligente</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f9; }
+        #reader { width: 100%; max-width: 500px; margin: 20px auto; border: 2px solid #007bff; border-radius: 10px; }
+        .btn { padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Escaneie o Código de Barras</h1>
+    <div id="reader"></div>
+    <br>
+    <a href="index.html" class="btn">Voltar ao Início</a>
+
+    <script>
+        // Esta função DEVE vir antes da renderização do scanner
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Código capturado: ${decodedText}`);
+            
+            // 1. Para a câmera para evitar múltiplos scans
+            html5QrcodeScanner.clear().then(() => {
+                // 2. Redireciona passando o código pela URL
+                window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`;
+            }).catch(error => {
+                console.error("Erro ao limpar o scanner:", error);
+            });
+        }
+
+        function onScanFailure(error) {
+            // Erros de leitura (comum enquanto a câmera foca) - ignoramos para não poluir o console
+        }
+
+        // Inicializa o scanner
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 10, 
+                qrbox: { width: 250, height: 150 }, // Formato retangular é melhor para código de barras
+                aspectRatio: 1.777778 // 16:9
+            }
+        );
+
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    </script>
+</body>
+</html>
