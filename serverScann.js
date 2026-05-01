@@ -1,46 +1,34 @@
 const express = require('express');
 const axios = require('axios');
-const path = require('path'); // Módulo nativo para lidar com caminhos
-require('dotenv').config();
+const path = require('path');
 
 const app = express();
 
-// --- O AJUSTE ESTÁ AQUI ---
-// Esta linha diz ao Express: "Se alguém acessar a raiz (/), procure arquivos na pasta public"
+// Serve os arquivos da pasta public (onde estão seus HTMLs)
 app.use(express.static('public')); 
-// --------------------------
+// Permite que o servidor entenda JSON (útil para quando formos salvar no estoque)
+app.use(express.json());
 
-const API_KEY = process.env.GEMINI_API_KEY || "SUA_CHAVE_AQUI";
-
-app.get('/receita/:produto', async (req, res) => {
-    const produto = req.params.produto;
+// Rota focada APENAS em buscar a descrição do produto
+app.get('/api/produto/:codigo', async (req, res) => {
+    const codigo = req.params.codigo;
     
-    // URL do Gemini (ajustada para a v1beta)
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-    const data = {
-        contents: [{
-            parts: [{
-                text: `Crie uma receita com o produto/código ${produto}. Responda estritamente apenas um objeto JSON: {"nome": "string", "ingredientes": [], "preparo": []}`
-            }]
-        }],
-        generationConfig: {
-            response_mime_type: "application/json"
-        }
-    };
-
     try {
-        const response = await axios.post(url, data);
+        // Consulta o banco de dados global de produtos alimentícios
+        const url = `https://br.openfoodfacts.org/api/v0/product/${codigo}.json`;
+        const response = await axios.get(url);
         
-        if (response.data.candidates && response.data.candidates[0].content) {
-            const textoIA = response.data.candidates[0].content.parts[0].text;
-            res.json(JSON.parse(textoIA));
+        if (response.data.status === 1) {
+            // Produto encontrado! Pega o nome em português ou o nome padrão
+            const nomeProduto = response.data.product.product_name_pt || response.data.product.product_name;
+            res.json({ encontrado: true, nome: nomeProduto });
         } else {
-            res.status(500).json({ erro: "IA não gerou conteúdo" });
+            // Produto não cadastrado na base deles
+            res.json({ encontrado: false, nome: "" });
         }
     } catch (error) {
-        console.error("Erro na API:", error.message);
-        res.status(500).json({ erro: "Falha na comunicação com a IA" });
+        console.error("Erro na API de produtos:", error.message);
+        res.status(500).json({ erro: "Falha na comunicação com o banco de produtos" });
     }
 });
 
