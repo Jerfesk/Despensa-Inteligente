@@ -64,7 +64,6 @@ Arquitetura do Sistema (Modelo C4) - mermaid.js
 
     ##########################################################################
 
-    C4Component
     title Diagrama de Componentes (C3) - API Principal (Back-end)
 
     %% Contêineres e Sistemas Externos que interagem com a API
