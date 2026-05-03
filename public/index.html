@@ -1,21 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+    <meta charset="UTF-8">
     <title>Despensa Inteligente - Home</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 50px; background: #f8f9fa; }
-        .menu-card { display: inline-block; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: white; shadow: 2px 2px 5px #ccc; }
+        .menu-card { display: inline-block; padding: 30px; border: 1px solid #ddd; border-radius: 10px; background: white; box-shadow: 2px 2px 10px #ccc; max-width: 400px; }
         .btn { display: block; padding: 15px 30px; margin: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
         .btn-scan { background: #28a745; }
+        .leitor-fisico-box { margin: 20px 0; padding: 15px; border: 2px dashed #007bff; border-radius: 8px; background: #f0f8ff; }
+        input[type="text"] { width: 80%; padding: 10px; font-size: 16px; text-align: center; border: 1px solid #ccc; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="menu-card">
         <h1>🍎 Minha Despensa</h1>
         <p>O que deseja fazer hoje?</p>
-        <a href="scanner.html" class="btn btn-scan">📸 Escanear Novo Produto</a>
-        <a href="#" class="btn">📦 Ver Meu Estoque (Em breve)</a>
-        <a href="#" class="btn" style="background:#6c757d">🔔 Alertas de Validade</a>
+        
+        <div class="leitor-fisico-box">
+            <label style="font-weight: bold; color: #333;">🔫 Usar Leitor Físico</label>
+            <p style="font-size: 12px; color: #666; margin-bottom: 5px;">Clique no campo abaixo e dispare o leitor:</p>
+            <input type="text" id="input-leitor" placeholder="Escaneie aqui..." autofocus>
+        </div>
+
+        <p style="color: #666; font-size: 14px;">Ou utilize a câmera do aparelho:</p>
+        <a href="scanner.html" class="btn btn-scan">📸 Escanear com a Câmera</a>
+        <a href="estoque.html" class="btn">📦 Ver Meu Estoque</a>
     </div>
+
+    <script>
+        const inputLeitor = document.getElementById('input-leitor');
+
+        // Ouve as teclas digitadas no campo
+        inputLeitor.addEventListener('keypress', function(e) {
+            // Se a tecla pressionada for "Enter" (o leitor físico aperta Enter no final do código)
+            if (e.key === 'Enter') {
+                const codigoLido = this.value.trim();
+                if (codigoLido) {
+                    // Redireciona para a página de cadastro passando o código
+                    window.location.href = `cadastro.html?codigo=${encodeURIComponent(codigoLido)}`;
+                }
+            }
+        });
+
+        // Opcional: Clicar em qualquer lugar da tela mantém o foco no leitor para evitar erros
+        document.addEventListener('click', (e) => {
+            if(e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                inputLeitor.focus();
+            }
+        });
+    </script>
 </body>
 </html>

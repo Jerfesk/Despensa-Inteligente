@@ -9,7 +9,8 @@
         label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #333; }
         input { width: 100%; margin-top: 5px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
         button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        .status-busca { font-size: 12px; color: #007bff; font-style: italic; display: block; margin-bottom: 5px; }
+        .btn-voltar { background-color: #6c757d; margin-top: 10px; }
+        .status-busca { font-size: 12px; color: #007bff; font-style: italic; display: block; margin-bottom: 5px; margin-top: 5px;}
     </style>
 </head>
 <body>
@@ -28,25 +29,24 @@
         <input type="date" id="validade">
         
         <button onclick="salvarProduto()">Salvar no Estoque</button>
+        <button class="btn-voltar" onclick="window.location.href='index.html'">Voltar para o Início</button>
     </div>
 
     <script>
-        // Pega o código de barras que o scanner mandou pela URL
         const params = new URLSearchParams(window.location.search);
         const codigo = params.get('codigo');
         
         document.getElementById('exibir-codigo').innerText = codigo || "Nenhum código lido";
 
-        // Se tiver código, chama o back-end para preencher a descrição
         if (codigo) {
             buscarNomeDoProduto(codigo);
         } else {
-            document.getElementById('status-busca').innerText = "Nenhum código para buscar.";
+            document.getElementById('status-busca').innerText = "⚠️ Nenhum código recebido.";
+            document.getElementById('status-busca').style.color = "red";
         }
 
         async function buscarNomeDoProduto(codigoBarras) {
             try {
-                // Chama aquela rota do Node.js que criamos agora
                 const response = await fetch(`/api/produto/${codigoBarras}`);
                 const data = await response.json();
                 
@@ -58,34 +58,45 @@
                     statusSpan.innerText = "✅ Produto encontrado!";
                     statusSpan.style.color = "green";
                 } else {
-                    statusSpan.innerText = "⚠️ Produto não encontrado. Digite a descrição.";
+                    statusSpan.innerText = "⚠️ Produto não encontrado. Digite manualmente.";
                     statusSpan.style.color = "orange";
                 }
             } catch (error) {
                 console.error("Erro na busca:", error);
-                document.getElementById('status-busca').innerText = "Erro ao buscar produto.";
+                document.getElementById('status-busca').innerText = "❌ Erro ao buscar produto.";
+                document.getElementById('status-busca').style.color = "red";
             }
         }
 
-        function salvarProduto() {
+        async function salvarProduto() {
             const dados = {
-                codigo: codigo,
-                nome: document.getElementById('nome').value,
-                quantidade: document.getElementById('quantidade').value,
-                validade: document.getElementById('validade').value
-            };
-            
-            if(!dados.nome) {
-                alert("Por favor, preencha a descrição do produto!");
-                return;
-            }
-            
-            console.log("Pronto para salvar no banco de dados:", dados);
-            alert(`Produto "${dados.nome}" salvo com sucesso!`);
-            
-            // Redireciona de volta para a tela inicial
-            window.location.href = 'index.html'; 
+            codigo: codigo,
+            nome: document.getElementById('nome').value,
+            quantidade: document.getElementById('quantidade').value,
+            validade: document.getElementById('validade').value
+        };
+    
+        if(!dados.nome || !dados.quantidade) {
+        alert("Preencha o nome e a quantidade!");
+        return;
         }
+
+        try {
+            const response = await fetch('/api/estoque', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+
+        if (response.ok) {
+            alert("Produto salvo com sucesso!");
+            window.location.href = 'index.html';
+        }
+        } catch (error) {
+        console.error("Erro ao salvar:", error);
+        alert("Erro ao salvar produto.");
+        }
+}
     </script>
 </body>
 </html>

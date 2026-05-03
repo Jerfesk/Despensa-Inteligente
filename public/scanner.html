@@ -6,45 +6,57 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f9; }
-        #reader { width: 100%; max-width: 500px; margin: 20px auto; border: 2px solid #007bff; border-radius: 10px; }
-        .btn { padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+        #reader { width: 100%; max-width: 500px; margin: 20px auto; border: 2px solid #007bff; border-radius: 10px; background: white;}
+        .btn { display: inline-block; padding: 10px 20px; margin-top: 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+        .aviso { color: #dc3545; font-size: 14px; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>Escaneie o Código de Barras</h1>
+    <p class="aviso">Atenção: A câmera pode não funcionar se você estiver visualizando dentro do painel do VS Code. Abra esta página em uma Nova Aba!</p>
+    
     <div id="reader"></div>
     <br>
-    <a href="index.html" class="btn">Voltar ao Início</a>
+    <a href="#" id="btn-voltar" class="btn">Voltar ao Início</a>
 
     <script>
-        // Esta função DEVE vir antes da renderização do scanner
+        let html5QrcodeScanner;
+
         function onScanSuccess(decodedText, decodedResult) {
             console.log(`Código capturado: ${decodedText}`);
             
-            // 1. Para a câmera para evitar múltiplos scans
             html5QrcodeScanner.clear().then(() => {
-                // 2. Redireciona passando o código pela URL
                 window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`;
             }).catch(error => {
                 console.error("Erro ao limpar o scanner:", error);
+                window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`;
             });
         }
 
         function onScanFailure(error) {
-            // Erros de leitura (comum enquanto a câmera foca) - ignoramos para não poluir o console
+            // Ignorando erros contínuos enquanto busca o foco
         }
 
-        // Inicializa o scanner
-        let html5QrcodeScanner = new Html5QrcodeScanner(
+        html5QrcodeScanner = new Html5QrcodeScanner(
             "reader", 
             { 
                 fps: 10, 
-                qrbox: { width: 250, height: 150 }, // Formato retangular é melhor para código de barras
-                aspectRatio: 1.777778 // 16:9
+                qrbox: { width: 250, height: 150 },
+                aspectRatio: 1.777778
             }
         );
 
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+        // Se clicar em voltar, tenta desligar a câmera primeiro
+        document.getElementById('btn-voltar').addEventListener('click', (e) => {
+            e.preventDefault();
+            html5QrcodeScanner.clear().then(() => {
+                window.location.href = 'index.html';
+            }).catch(() => {
+                window.location.href = 'index.html';
+            });
+        });
     </script>
 </body>
 </html>

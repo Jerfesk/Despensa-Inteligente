@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Estoque - Despensa Inteligente</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f8f9fa; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px #ccc; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .btn-del { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        .btn-recipe { background: #ffc107; color: black; text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: 13px; font-weight: bold; }
+        .btn-voltar { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-voltar">← Voltar ao Início</a>
+        <h1>📦 Meu Estoque</h1>
+        <table id="tabela-estoque">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Qtd</th>
+                    <th>Validade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function carregarEstoque() {
+            const response = await fetch('/api/estoque');
+            const estoque = await response.json();
+            const corpo = document.getElementById('corpo-tabela');
+            corpo.innerHTML = '';
+
+            estoque.forEach(prod => {
+                const tr = document.createElement('tr');
+                // Link de receita: Busca automática no Google
+                const linkReceita = `https://www.google.com/search?q=receitas+com+${encodeURIComponent(prod.nome)}`;
+                
+                tr.innerHTML = `
+                    <td>${prod.nome}</td>
+                    <td>${prod.quantidade}</td>
+                    <td>${prod.validade || '-'}</td>
+                    <td>
+                        <a href="${linkReceita}" target="_blank" class="btn-recipe">🍳 Receitas</a>
+                        <button class="btn-del" onclick="deletarItem(${prod.id})">🗑️</button>
+                    </td>
+                `;
+                corpo.appendChild(tr);
+            });
+        }
+
+        async function deletarItem(id) {
+            if (confirm("Deseja realmente remover este item?")) {
+                await fetch(`/api/estoque/${id}`, { method: 'DELETE' });
+                carregarEstoque(); // Atualiza a tela
+            }
+        }
+
+        // Carrega os dados ao abrir a página
+        carregarEstoque();
+    </script>
+</body>
+</html>
