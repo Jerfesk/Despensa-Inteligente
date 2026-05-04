@@ -5,14 +5,39 @@
     <title>Meu Estoque - Despensa Inteligente</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background: #f8f9fa; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px #ccc; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px #ccc; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #007bff; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
-        .btn-del { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-        .btn-recipe { background: #ffc107; color: black; text-decoration: none; padding: 5px 10px; border-radius: 3px; font-size: 13px; font-weight: bold; }
+        
+        .vencendo { background-color: #fff3cd !important; } 
+        .vencido { background-color: #f8d7da !important; color: #721c24; font-weight: bold; } 
+
+        .btn-del { background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .btn-edit { background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
+        .btn-recipe { background: #6f42c1; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-right: 5px; }
         .btn-voltar { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
+        .acoes { display: flex; align-items: center; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;}
+        
+        .modal-box { background: white; padding: 25px; border-radius: 10px; width: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; }
+        .modal-box label { display: block; text-align: left; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
+        .modal-box input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        
+        .modal-receita-box { background: white; padding: 30px; border-radius: 10px; width: 500px; max-width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; }
+        .modal-receita-box h3 { color: #6f42c1; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;}
+        .modal-receita-box h4 { color: #333; margin-bottom: 5px; }
+        .modal-receita-box ul, .modal-receita-box ol { margin-top: 0; padding-left: 20px; }
+        .modal-receita-box li { margin-bottom: 5px; line-height: 1.4;}
+        
+        .modal-botoes { margin-top: 20px; display: flex; justify-content: space-between; }
+        .btn-salvar-modal { background: #007bff; color: white; border: none; padding: 10px; width: 48%; border-radius: 5px; cursor: pointer; font-weight: bold;}
+        .btn-cancelar-modal { background: #6c757d; color: white; border: none; padding: 10px; width: 48%; border-radius: 5px; cursor: pointer; font-weight: bold;}
+        .btn-fechar-receita { background: #dc3545; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px;}
+        
+        .loading { text-align: center; color: #6f42c1; font-weight: bold; font-size: 18px; padding: 20px;}
     </style>
 </head>
 <body>
@@ -29,43 +54,179 @@
                 </tr>
             </thead>
             <tbody id="corpo-tabela">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
+    <div id="modal-editar" class="modal-overlay">
+        <div class="modal-box">
+            <h3>✏️ Alterar Produto</h3>
+            <input type="hidden" id="edit-id">
+            <label>Quantidade:</label>
+            <input type="number" id="edit-qtd" min="1">
+            <label>Data de Validade:</label>
+            <input type="date" id="edit-validade">
+            <div class="modal-botoes">
+                <button class="btn-cancelar-modal" onclick="fecharModalEditar()">Cancelar</button>
+                <button class="btn-salvar-modal" onclick="salvarEdicao()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-receita" class="modal-overlay">
+        <div class="modal-receita-box">
+            <div id="conteudo-receita">
+            </div>
+            <button class="btn-fechar-receita" onclick="fecharModalReceita()">Fechar Receita</button>
+        </div>
+    </div>
+
     <script>
+        function formatarDataBR(dataISO) {
+            if (!dataISO) return '-';
+            const partes = dataISO.split('-'); 
+            if (partes.length !== 3) return dataISO;
+            return `${partes[2]}/${partes[1]}/${partes[0]}`; 
+        }
+
         async function carregarEstoque() {
             const response = await fetch('/api/estoque');
             const estoque = await response.json();
             const corpo = document.getElementById('corpo-tabela');
             corpo.innerHTML = '';
 
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            let produtosEmAlerta = [];
+
             estoque.forEach(prod => {
                 const tr = document.createElement('tr');
-                // Link de receita: Busca automática no Google
-                const linkReceita = `https://www.google.com/search?q=receitas+com+${encodeURIComponent(prod.nome)}`;
+                let classeCss = "";
+                let avisoExtra = "";
+
+                if (prod.validade) {
+                    const [ano, mes, dia] = prod.validade.split('-');
+                    const dataValidade = new Date(ano, mes - 1, dia);
+                    const diferencaTempo = dataValidade.getTime() - hoje.getTime();
+                    const diferencaDias = Math.ceil(diferencaTempo / (1000 * 3600 * 24));
+
+                    if (diferencaDias < 0) {
+                        classeCss = "vencido";
+                        avisoExtra = " 🛑 VENCIDO";
+                        produtosEmAlerta.push(`- ${prod.nome} (VENCEU)`);
+                    } else if (diferencaDias <= 7) {
+                        classeCss = "vencendo";
+                        avisoExtra = ` ⚠️ (${diferencaDias} dias)`;
+                        produtosEmAlerta.push(`- ${prod.nome} (Vence em ${diferencaDias} dia(s))`);
+                    }
+                }
+
+                tr.className = classeCss;
                 
                 tr.innerHTML = `
                     <td>${prod.nome}</td>
                     <td>${prod.quantidade}</td>
-                    <td>${prod.validade || '-'}</td>
-                    <td>
-                        <a href="${linkReceita}" target="_blank" class="btn-recipe">🍳 Receitas</a>
-                        <button class="btn-del" onclick="deletarItem(${prod.id})">🗑️</button>
+                    <td>${formatarDataBR(prod.validade)}${avisoExtra}</td>
+                    <td class="acoes">
+                        <button class="btn-recipe" onclick="gerarReceita('${prod.nome}')" title="Gerar Receita IA">✨ Receita</button>
+                        <button class="btn-edit" onclick="abrirModalEditar(${prod.id}, ${prod.quantidade}, '${prod.validade}')" title="Editar">✏️</button>
+                        <button class="btn-del" onclick="deletarItem(${prod.id})" title="Excluir">🗑️</button>
                     </td>
                 `;
                 corpo.appendChild(tr);
             });
-        }
 
-        async function deletarItem(id) {
-            if (confirm("Deseja realmente remover este item?")) {
-                await fetch(`/api/estoque/${id}`, { method: 'DELETE' });
-                carregarEstoque(); // Atualiza a tela
+            if (produtosEmAlerta.length > 0) {
+                setTimeout(() => {
+                    alert("Atenção! Você tem produtos próximos do vencimento ou vencidos:\n\n" + produtosEmAlerta.join("\n"));
+                }, 100);
             }
         }
 
-        // Carrega os dados ao abrir a página
+        async function gerarReceita(nomeProduto) {
+            const modal = document.getElementById('modal-receita');
+            const conteudo = document.getElementById('conteudo-receita');
+            
+            modal.style.display = 'flex';
+            conteudo.innerHTML = `<div class="loading">✨ O Chef IA está criando uma receita com <b>${nomeProduto}</b>... Aguarde!</div>`;
+
+            try {
+                const response = await fetch(`/receita/${encodeURIComponent(nomeProduto)}`);
+                const receita = await response.json();
+
+                // === AQUI ESTÁ A PARTE QUE MOSTRA O ERRO EXATO NA TELA ===
+                if (receita.erro) {
+                    let detalheFormatado = typeof receita.detalhe === 'object' ? JSON.stringify(receita.detalhe) : receita.detalhe;
+                    conteudo.innerHTML = `
+                        <div style="color:#721c24; background:#f8d7da; padding:15px; border-radius:5px;">
+                            <h4 style="margin-top:0;">🛑 O Servidor Recusou a Geração:</h4>
+                            <p><b>Motivo:</b> ${receita.erro}</p>
+                            <p style="font-size: 12px; word-break: break-all;"><b>Detalhe Técnico:</b> <br> ${detalheFormatado || 'Nenhum detalhe adicional'}</p>
+                        </div>`;
+                    return;
+                }
+
+                let html = `<h3>🍽️ ${receita.nome}</h3>`;
+                
+                html += `<h4>🛒 Ingredientes:</h4><ul>`;
+                receita.ingredientes.forEach(ing => {
+                    html += `<li>${ing}</li>`;
+                });
+                html += `</ul>`;
+
+                html += `<h4>👨‍🍳 Modo de Preparo:</h4><ol>`;
+                receita.preparo.forEach(passo => {
+                    html += `<li>${passo}</li>`;
+                });
+                html += `</ol>`;
+
+                conteudo.innerHTML = html;
+
+            } catch (error) {
+                // Se o erro for de conexão, mostra isso na tela também
+                conteudo.innerHTML = `
+                    <div style="color:#721c24; background:#f8d7da; padding:15px; border-radius:5px;">
+                        <h4 style="margin-top:0;">🔌 Erro de Conexão:</h4>
+                        <p>O navegador não conseguiu se conectar com a rota /receita no seu servidor.</p>
+                        <p style="font-size: 12px;">Detalhe: ${error.message}</p>
+                    </div>`;
+            }
+        }
+
+        function fecharModalReceita() { document.getElementById('modal-receita').style.display = 'none'; }
+        
+        function abrirModalEditar(id, qtdAtual, validadeAtual) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-qtd').value = qtdAtual;
+            document.getElementById('edit-validade').value = validadeAtual; 
+            document.getElementById('modal-editar').style.display = 'flex'; 
+        }
+
+        function fecharModalEditar() { document.getElementById('modal-editar').style.display = 'none'; }
+
+        async function salvarEdicao() {
+            const id = document.getElementById('edit-id').value;
+            const novaQtd = document.getElementById('edit-qtd').value;
+            const novaValidade = document.getElementById('edit-validade').value;
+
+            if(!novaQtd || novaQtd < 1) { alert("Quantidade inválida!"); return; }
+
+            await fetch(`/api/estoque/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: parseInt(novaQtd), validade: novaValidade })
+            });
+            fecharModalEditar(); 
+            carregarEstoque(); 
+        }
+
+        async function deletarItem(id) {
+            if (confirm("Deseja remover este item?")) {
+                await fetch(`/api/estoque/${id}`, { method: 'DELETE' });
+                carregarEstoque();
+            }
+        }
+
         carregarEstoque();
     </script>
 </body>
