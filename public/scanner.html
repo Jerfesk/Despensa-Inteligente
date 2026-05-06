@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Scanner - Despensa Inteligente</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>  <!--carrega biblioteca html5-qrcode-->
+        <!-- Ela acessa a câmera
+            Detecta QR Code / código de barras
+            Te entrega o valor lido -->
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f9; }
         #reader { width: 100%; max-width: 500px; margin: 20px auto; border: 2px solid #007bff; border-radius: 10px; background: white;}
@@ -15,30 +18,32 @@
     <h1>Escaneie o Código de Barras</h1>
     <p class="aviso">Atenção: A câmera pode não funcionar se você estiver visualizando dentro do painel do VS Code. Abra esta página em uma Nova Aba!</p>
     
-    <div id="reader"></div>
+    <div id="reader"></div>     <!-- Biblioteca que injeta a camera-->
     <br>
     <a href="#" id="btn-voltar" class="btn">Voltar ao Início</a>
 
     <script>
-        let html5QrcodeScanner;
+        let html5QrcodeScanner;                                       //variavel que guarda a scanner
 
-        function onScanSuccess(decodedText, decodedResult) {
-            console.log(`Código capturado: ${decodedText}`);
+        function onScanSuccess(decodedText, decodedResult) {         //Essa função roda quando um código é lido com sucesso
+            console.log(`Código capturado: ${decodedText}`);         //Mostra no console
             
-            html5QrcodeScanner.clear().then(() => {
-                window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`;
-            }).catch(error => {
+            html5QrcodeScanner.clear().then(() => {                 //Desliga o scanner
+                window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`; //Vai para outra página e envia o código na URL
+            }).catch(error => {                      // se der erro desliga a camera
                 console.error("Erro ao limpar o scanner:", error);
-                window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`;
+                window.location.href = `cadastro.html?codigo=${encodeURIComponent(decodedText)}`; //mesmo assim redireciona
             });
         }
 
-        function onScanFailure(error) {
+        function onScanFailure(error) {         
             // Ignorando erros contínuos enquanto busca o foco
         }
 
+        //### Criação do scanner ###
+
         html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", 
+            "reader",              //ID da div onde vai aparecer a câmera.
             { 
                 fps: 10, 
                 qrbox: { width: 250, height: 150 },
@@ -46,7 +51,7 @@
             }
         );
 
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);        //liga a camera e scannea
 
         // Se clicar em voltar, tenta desligar a câmera primeiro
         document.getElementById('btn-voltar').addEventListener('click', (e) => {
@@ -60,3 +65,9 @@
     </script>
 </body>
 </html>
+
+<!-- web (frontend) que:
+
+ Abre a câmera
+ Escaneia código de barras / QR Code
+ Redireciona para outra página com o código lido -->
