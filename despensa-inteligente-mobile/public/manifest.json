@@ -1,0 +1,21 @@
+{
+  "name": "Despensa Inteligente",
+  "short_name": "Despensa",
+  "start_url": "/public/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "description": "Uma aplicação para gerenciar seu estoque de forma inteligente.",
+  "icons": [
+    {
+      "src": "/public/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/public/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

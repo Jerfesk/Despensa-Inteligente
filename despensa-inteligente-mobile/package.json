@@ -1,0 +1,23 @@
+{
+  "name": "despensa-inteligente-mobile",
+  "version": "1.0.0",
+  "description": "Mobile version of the Despensa Inteligente application with PWA support.",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "http-server public",
+    "build": "echo 'Build step can be added here'",
+    "test": "echo 'No tests specified'"
+  },
+  "dependencies": {
+    "http-server": "^0.12.3"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "PWA",
+    "mobile",
+    "despensa",
+    "inteligente"
+  ],
+  "author": "Jerfesk",
+  "license": "MIT"
+}
