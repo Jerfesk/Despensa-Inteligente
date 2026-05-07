@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Usuário</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f0f2f5; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; color: #333; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background: #218838; }
+        .link { text-align: center; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>📝 Criar Conta</h2>
+        <input type="email" id="reg-email" placeholder="Seu e-mail">
+        <input type="password" id="reg-senha" placeholder="Crie uma senha">
+        <button onclick="registrar()">Cadastrar</button>
+        <div id="msg" style="text-align: center; margin-top: 10px;"></div>
+        <div class="link">
+            <a href="login.html">Já tenho conta? Ir para Login</a>
+        </div>
+    </div>
+
+    <script>
+        async function registrar() {
+            const email = document.getElementById('reg-email').value;
+            const senha = document.getElementById('reg-senha').value;
+            const msg = document.getElementById('msg');
+
+            const response = await fetch('/api/auth/registrar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const data = await response.json();
+            if (data.sucesso) {
+                msg.style.color = "green";
+                msg.innerText = "Usuário criado! Redirecionando...";
+                setTimeout(() => window.location.href = 'login.html', 2000);
+            } else {
+                msg.style.color = "red";
+                msg.innerText = data.erro || "Erro ao cadastrar.";
+            }
+        }
+    </script>
+</body>
+</html>

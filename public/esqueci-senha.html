@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar Senha</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 50px; background: #f8f9fa; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px #ccc; width: 300px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h3>🔑 Recuperar Senha</h3>
+        <p style="font-size: 13px;">Digite seu e-mail para receber um código de recuperação.</p>
+        <input type="email" id="email-recupera" placeholder="seu@email.com">
+        <button onclick="enviarEmail()">Enviar Código</button>
+        <p id="msg"></p>
+        <a href="login.html">Voltar ao Login</a>
+    </div>
+
+    <script>
+        async function enviarEmail() {
+            const email = document.getElementById('email-recupera').value;
+            const msg = document.getElementById('msg');
+            msg.innerText = "Enviando... ⏳";
+
+            const response = await fetch('/api/auth/esqueci-senha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+            if (data.sucesso) {
+                msg.style.color = "green";
+                msg.innerText = "E-mail enviado! Verifique sua caixa de entrada.";
+                // Opcional: Redirecionar para tela de trocar senha após 3 segundos
+                setTimeout(() => { window.location.href = 'redefinir-senha.html'; }, 3000);
+            } else {
+                msg.style.color = "red";
+                msg.innerText = data.erro;
+            }
+        }
+    </script>
+</body>
+</html>

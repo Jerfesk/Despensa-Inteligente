@@ -1,0 +1,39 @@
+<div class="form-card">
+    <h2>🔐 Acesso</h2>
+    <input type="email" id="email" placeholder="E-mail">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="fazerLogin()">Entrar</button>
+    <a href="esqueci-senha.html">Esqueci minha senha</a>
+</div>
+
+<script>
+async function fazerLogin() {
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+    const msg = document.getElementById('mensagem-erro'); // Certifique-se de ter um <div> ou <p> com esse ID
+
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.token) {
+            // ✅ PASSO CRUCIAL: Salva o "passaporte" no navegador
+            localStorage.setItem('token', data.token);
+            
+            // Redireciona para a página principal
+            window.location.href = 'index.html';
+        } else {
+            // Exibe o erro (ex: Usuário não encontrado)
+            alert("Erro: " + (data.erro || "Falha no login"));
+        }
+    } catch (error) {
+        console.error("Erro ao conectar:", error);
+        alert("Servidor fora do ar ou erro de conexão.");
+    }
+}
+</script>

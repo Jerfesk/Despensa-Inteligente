@@ -8,7 +8,6 @@ const nodemailer = require('nodemailer');
 
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
-
 const app = express();
 app.get('/', (req, res) => {
 res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -17,7 +16,6 @@ app.use(express.static('public'));
 app.use(express.json());
 
 const API_KEY = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : undefined;
-console.log("CHAVE:", API_KEY); //pelo gpt
 const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_aqui';
 
 if (!API_KEY) {
@@ -214,54 +212,47 @@ app.delete('/api/estoque/:id', autenticarToken, (req, res) => {
 });
 
 // --- GERAÇÃO DE RECEITA COM IA ---
-const OpenAI = require("openai");
-
-const groq = new OpenAI({
-    apiKey: process.env.GROQ_API_KEY,
-    baseURL: "https://api.groq.com/openai/v1"
-});
-
 app.get('/receita/:produto', autenticarToken, async (req, res) => {
-
     const produto = req.params.produto;
 
+    if (!API_KEY || API_KEY === 'undefined') {
+        return res.status(500).json({ erro: "Chave Gemini não configurada." });
+    }
+
+    // ALTERAÇÃO: Usando a versão v1beta (que suporta o flash) e o sufixo -latest
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+
+    const data = {
+        contents: [{
+            parts: [{ text: `Crie uma receita simples com ${produto}. Responda apenas o JSON puro, sem markdown: {"nome": "string", "ingredientes": [], "preparo": []}.` }]
+        }]
+    };
+
     try {
-
-        const resposta = await groq.chat.completions.create({
-            model: "llama-3.3-70b-versatile",
-            messages: [
-                {
-                    role: "user",
-                    content:
-`Crie uma receita simples com ${produto}.
-Responda apenas JSON:
-{
-  "nome": "",
-  "ingredientes": [],
-  "preparo": []
-}`
-                }
-            ]
-        });
-
-        let textoIA =
-resposta.choices[0].message.content;
-
-        textoIA = textoIA
-            .replace(/```json/g, "")
-            .replace(/```/g, "")
-            .trim();
-
-        const receita = JSON.parse(textoIA);
-
-        res.json(receita);
+        const response = await axios.post(url, data);
+        
+        if (response.data.candidates && response.data.candidates[0].content) {
+            let textoIA = response.data.candidates[0].content.parts[0].text;
+            
+            // Limpa o texto caso a IA envie marcações de bloco de código markdown
+            textoIA = textoIA.replace(/```json/g, "").replace(/```/g, "").trim();
+            
+            res.json(JSON.parse(textoIA));
+        } else {
+            throw new Error("Resposta da IA vazia ou malformada");
+        }
 
     } catch (error) {
+        // Log detalhado no terminal para você ver o que está acontecendo
+        if (error.response) {
+            console.error("Erro da API Google:", error.response.data);
+        } else {
+            console.error("Erro de conexão:", error.message);
+        }
 
-        console.log(error);
-
-        res.status(500).json({
-            erro: "Erro na IA"
+        res.status(500).json({ 
+            erro: "Erro na IA", 
+            detalhe: "O modelo solicitado não respondeu. Verifique sua cota ou chave API." 
         });
     }
 });
