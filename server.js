@@ -166,17 +166,23 @@ app.post('/api/auth/redefinir-senha', async (req, res) => {
 // --- ROTAS DE PRODUTOS (PROTEGIDAS) ---
 
 app.get('/api/produto/:codigo', autenticarToken, async (req, res) => {
-    const codigo = req.params.codigo;
+    // Limpa o código recebido
+    const codigo = req.params.codigo.replace(/\D/g, "");
+
     try {
         const url = `https://br.openfoodfacts.org/api/v0/product/${codigo}.json`;
-        const response = await axios.get(url);
-        if (response.data.status === 1) {
+        const response = await axios.get(url, {
+            headers: { 'User-Agent': 'MinhaDespensaApp - Node - Versao1.0' } // IMPORTANTE
+        });
+
+        if (response.data && response.data.status === 1) {
             const nomeProduto = response.data.product.product_name_pt || response.data.product.product_name;
             res.json({ encontrado: true, nome: nomeProduto });
         } else {
             res.json({ encontrado: false });
         }
     } catch (error) {
+        console.error("Erro na busca:", error.message);
         res.status(500).json({ erro: "Erro na API externa" });
     }
 });

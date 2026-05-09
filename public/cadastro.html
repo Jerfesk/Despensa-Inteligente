@@ -46,29 +46,35 @@
         }
 
         async function buscarNomeDoProduto(codigoBarras) {
-            try {
-                const response = await fetch(`/api/produto/${codigoBarras}`);
-                const data = await response.json();
-                
-                const statusSpan = document.getElementById('status-busca');
-                const inputNome = document.getElementById('nome');
+    const token = localStorage.getItem('token'); // Pegando o token para a busca também
 
-                if (data.encontrado && data.nome) {
-                    inputNome.value = data.nome;
-                    statusSpan.innerText = "✅ Produto encontrado!";
-                    statusSpan.style.color = "green";
-                } else {
-                    statusSpan.innerText = "⚠️ Produto não encontrado. Digite manualmente.";
-                    statusSpan.style.color = "orange";
-                }
-            } catch (error) {
-                console.error("Erro na busca:", error);
-                document.getElementById('status-busca').innerText = "❌ Erro ao buscar produto.";
-                document.getElementById('status-busca').style.color = "red";
+    try {
+        const response = await fetch(`/api/produto/${codigoBarras}`, {
+            headers: { 
+                'Authorization': `Bearer ${token}` // Sem isso, o servidor não responde o nome
             }
+        });
+        const data = await response.json();
+        
+        const statusSpan = document.getElementById('status-busca');
+        const inputNome = document.getElementById('nome');
+
+        if (data.encontrado && data.nome) {
+            inputNome.value = data.nome;
+            statusSpan.innerText = "✅ Produto encontrado!";
+            statusSpan.style.color = "green";
+        } else {
+            statusSpan.innerText = "⚠️ Produto não encontrado. Digite manualmente.";
+            statusSpan.style.color = "orange";
         }
+    } catch (error) {
+        console.error("Erro na busca:", error);
+        document.getElementById('status-busca').innerText = "❌ Erro ao buscar produto.";
+    }
+}
 
         async function salvarProduto() {
+            const token = localStorage.getItem('token');
             const dados = {
             codigo: codigo,
             nome: document.getElementById('nome').value,
@@ -84,7 +90,10 @@
         try {
             const response = await fetch('/api/estoque', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(dados)
         });
 

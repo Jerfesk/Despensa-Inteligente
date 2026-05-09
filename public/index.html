@@ -35,9 +35,10 @@
         inputLeitor.addEventListener('keypress', function(e) {
             // Se a tecla pressionada for "Enter" (o leitor físico aperta Enter no final do código)
             if (e.key === 'Enter') {
-                const codigoLido = this.value.trim();
+                e.preventDefault();
+                const codigoLido = this.value.replace(/\D/g, "");
                 if (codigoLido) {
-                    // Redireciona para a página de cadastro passando o código
+                    
                     window.location.href = `cadastro.html?codigo=${encodeURIComponent(codigoLido)}`;
                 }
             }
