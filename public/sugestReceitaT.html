@@ -1,145 +1,198 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sugestões para você</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sugestão de Receitas</title>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #387d39;
+            --background: #f1f6e9;
+            --white: #ffffff;
+            --text-dark: #1a461a;
+            --text-muted: #677f64;
+        }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-  <style>
-    /* PADRÃO DE CENTRALIZAÇÃO IGUAL AO ESTOQUE */
-    body {
-      display: flex;
-      justify-content: center; 
-      align-items: center;     
-      min-height: 100vh;       
-      margin: 0;
-      background-color: #e5e7eb; /* Fundo cinza para destacar o app */
-      font-family: 'Inter', sans-serif;
-    }
+        .app-container {
+            width: 375px;
+            height: 812px;
+            background: var(--background);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
 
-    .app-container {
-      width: 375px;
-      height: 812px;
-      background-color: #FCFDFB;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-      border-radius: 30px;
-    }
+        .header { padding: 50px 20px 10px; text-align: center; background: white; }
+        .header h1 { font-size: 20px; color: var(--text-dark); margin-bottom: 15px; }
 
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Campo de Busca */
+        .search-area { padding: 15px 20px; background: white; border-bottom: 1px solid #eee; }
+        .search-box {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 10px;
+            align-items: center;
+            border: 1px solid #ddd;
+        }
+        .search-box input {
+            border: none; background: none; outline: none;
+            flex: 1; padding: 5px 10px; font-size: 14px;
+        }
+        .btn-search {
+            background: var(--primary); color: white; border: none;
+            border-radius: 8px; padding: 8px 15px; cursor: pointer; font-weight: 600;
+        }
 
-    .btn-touch {
-      cursor: pointer;
-      transition: all 0.2s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 90px; }
+        
+        .suggestion-card {
+            background: white; border-radius: 16px; overflow: hidden;
+            margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.3s; cursor: pointer;
+        }
+        .suggestion-card img { width: 100%; height: 140px; object-fit: cover; }
+        .card-info { padding: 15px; }
+        .card-info h3 { font-size: 16px; color: var(--text-dark); margin-bottom: 5px; }
+        .card-info p { font-size: 12px; color: var(--text-muted); }
 
-    .btn-touch:active {
-      transform: scale(0.92);
-      opacity: 0.8;
-    }
+        /* Bottom Nav */
+        .nav-bar {
+            position: absolute; bottom: 0; width: 100%; height: 70px;
+            background: white; display: flex; justify-content: space-around;
+            align-items: center; border-top: 1px solid #eee; padding-bottom: 10px;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #999; font-size: 10px; text-decoration: none;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 22px; margin-bottom: 3px; }
 
-    .nav-btn { color: #677f64; }
-    .nav-btn.active { color: #387d39; }
-  </style>
+        .loading { text-align: center; padding: 20px; display: none; }
+        .spin { animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
 </head>
-
 <body>
-  <div class="app-container text-[#1A461A]">
 
-    <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-[#F1F6E9] to-transparent pointer-events-none z-0"></div>
+<div class="app-container">
+    <div class="header">
+        <h1>🍳 Sugestões do Chef</h1>
+    </div>
 
-    <header class="px-6 pt-12 pb-6 relative z-10 shrink-0">
-      <div class="flex items-start justify-between">
-        <div>
-          <h1 class="text-[26px] font-extrabold leading-tight tracking-tight mb-2">Sugestões para você</h1>
-          <p class="text-[14px] text-[#677F64] font-medium leading-snug">
-            Receitas com ingredientes<br /> perto do vencimento.
-          </p>
+    <div class="search-area">
+        <div class="search-box">
+            <input type="text" id="input-ingrediente" placeholder="Quais itens para receita ?">
+            <button class="btn-search" onclick="buscarSugestoes()">Buscar</button>
         </div>
-        <div class="w-12 h-12">
-          <svg viewBox="0 0 100 100" fill="none" class="w-full h-full">
-            <path d="M70 90C70 90 20 70 20 20C20 0 40 -10 60 -10C80 -10 100 10 120 40C120 40 120 90 70 90Z" fill="#75B632" />
-            <path d="M35 100C35 100 -5 80 -5 40C-5 25 10 15 25 15C40 15 55 30 65 50C65 50 65 100 35 100Z" fill="#A8D098" />
-          </svg>
+    </div>
+
+    <div class="content" id="lista-sugestoes">
+        <div id="status-msg" style="text-align: center; color: var(--text-muted); margin-top: 50px;">
+            <iconify-icon icon="lucide:chef-hat" style="font-size: 40px;"></iconify-icon>
+            <p>Digite um ingrediente para<br>ver sugestões de receitas.</p>
         </div>
-      </div>
-    </header>
-
-    <main class="flex-1 overflow-y-auto no-scrollbar px-6 pb-28 relative z-10">
-      
-      <div class="flex bg-white rounded-[24px] overflow-hidden border border-[#F1F6E9] shadow-[0_4px_16px_rgba(0,0,0,0.03)] mb-5">
-        <div class="relative w-[120px] h-[140px] shrink-0">
-          <img src="https://storage.googleapis.com/banani-generated-images/generated-images/67d26c37-4ff6-42bb-9b7e-403fe5c20fd7.jpg" class="w-full h-full object-cover" />
         </div>
-        <div class="flex flex-col justify-center p-4 flex-1">
-          <h3 class="text-[15px] font-bold leading-tight mb-1">Macarrão ao Molho</h3>
-          <p class="text-[11px] text-[#677F64] mb-3">Pronto em 25 min</p>
-          <button class="btn-touch bg-[#387D39] text-white text-[11px] font-semibold py-2 px-4 rounded-full w-fit"
-                  onclick="openPage('Receita: Macarrão')">
-            Ver receita
-          </button>
-        </div>
-      </div>
 
-      <div class="flex bg-white rounded-[24px] overflow-hidden border border-[#F1F6E9] shadow-[0_4px_16px_rgba(0,0,0,0.03)] mb-5">
-        <div class="relative w-[120px] h-[140px] shrink-0">
-          <img src="https://storage.googleapis.com/banani-generated-images/generated-images/49064e8f-4735-484c-a699-40150c579e98.jpg" class="w-full h-full object-cover" />
-        </div>
-        <div class="flex flex-col justify-center p-4 flex-1">
-          <h3 class="text-[15px] font-bold leading-tight mb-1">Lasanha de Frigideira</h3>
-          <p class="text-[11px] text-[#677F64] mb-3">Pronto em 30 min</p>
-          <button class="btn-touch bg-[#387D39] text-white text-[11px] font-semibold py-2 px-4 rounded-full w-fit"
-                  onclick="openPage('Receita: Lasanha')">
-            Ver receita
-          </button>
-        </div>
-      </div>
-
-    </main>
-
-    <nav class="absolute bottom-0 left-0 w-full h-20 bg-white border-t border-[#eee] flex items-center justify-around px-2 z-[100]">
-      
-      <button class="nav-btn btn-touch flex flex-col items-center gap-1" onclick="openPage('Estoque')">
-        <ion-icon name="home-outline" class="text-[22px]"></ion-icon>
-        <span class="text-[10px] font-medium">Estoque</span>
-      </button>
-
-      <button class="nav-btn btn-touch flex flex-col items-center gap-1" onclick="openPage('Alertas')">
-        <ion-icon name="notifications-outline" class="text-[22px]"></ion-icon>
-        <span class="text-[10px] font-medium">Alertas</span>
-      </button>
-
-      <button class="nav-btn btn-touch active flex flex-col items-center gap-1" onclick="openPage('Receitas')">
-        <ion-icon name="restaurant" class="text-[22px]"></ion-icon>
-        <span class="text-[10px] font-semibold">Receitas</span>
-      </button>
-
-      <button class="nav-btn btn-touch flex flex-col items-center gap-1" onclick="openPage('Perfil')">
-        <ion-icon name="person-outline" class="text-[22px]"></ion-icon>
-        <span class="text-[10px] font-medium">Perfil</span>
-      </button>
-
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-item">
+            <iconify-icon icon="lucide:home" class="nav-icon"></iconify-icon>
+            <span>Início</span>
+        </a>
+        <a href="estoque.html" class="nav-item">
+            <iconify-icon icon="lucide:package" class="nav-icon"></iconify-icon>
+            <span>Estoque</span>
+        </a>
+        <a href="sugestReceita.html" class="nav-item active">
+            <iconify-icon icon="lucide:chef-hat" class="nav-icon"></iconify-icon>
+            <span>Receitas</span>
+        </a>
+        <a href="perfil.html" class="nav-item">
+            <iconify-icon icon="lucide:user" class="nav-icon"></iconify-icon>
+            <span>Perfil</span>
+        </a>
     </nav>
-  </div>
+</div>
 
-  <script>
-    function openPage(name) {
-      console.log("Navegando para: " + name);
-      // Aqui você pode adicionar a lógica de troca de tela futuramente
+<script>
+  async function buscarSugestoes() {
+    const ingrediente = document.getElementById('input-ingrediente').value;
+    const lista = document.getElementById('lista-sugestoes');
+    const token = localStorage.getItem('token'); // Pega o token salvo no login
+
+    if (!ingrediente) return alert("Digite um ingrediente!");
+    if (!token) return alert("Sessão expirada. Faça login novamente.");
+
+    lista.innerHTML = `<div class="loading" style="display:block; text-align:center;">
+        <iconify-icon icon="lucide:loader-2" class="spin" style="font-size:30px; color:var(--primary)"></iconify-icon>
+        <p>O Chef está pensando...</p>
+    </div>`;
+
+    try {
+        const response = await fetch(`/api/sugestoes?ingrediente=${encodeURIComponent(ingrediente)}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const erroTxt = await response.text();
+            console.error("Resposta do servidor:", erroTxt);
+            throw new Error("Erro na rede");
+        }
+
+        const dados = await response.json();
+        lista.innerHTML = ""; 
+
+        if (dados.length === 0) {
+            lista.innerHTML = "<p>Nenhuma sugestão encontrada.</p>";
+            return;
+        }
+
+        dados.forEach(receita => {
+            const card = document.createElement('div');
+            card.className = 'suggestion-card';
+            // Aqui usamos a função que já existe no seu projeto para gerar os detalhes
+            card.onclick = () => alert("Receita selecionada: " + receita.nome); 
+            
+            card.innerHTML = `
+                
+                <div class="card-info">
+                    <h3>${receita.nome}</h3>
+                    <p>⏱️ ${receita.tempo} | 👨‍🍳 Sugestão IA</p>
+                </div>
+            `;
+            lista.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Erro no Frontend:", error);
+        lista.innerHTML = `<p style="color:red; text-align:center;">Erro ao buscar sugestões.<br><small>${error.message}</small></p>`;
     }
-  </script>
+}
+    // Permitir busca ao apertar Enter
+    document.getElementById('input-ingrediente').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') buscarSugestoes();
+    });
+</script>
+
 </body>
 </html>

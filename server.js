@@ -272,6 +272,42 @@ resposta.choices[0].message.content;
     }
 });
 
+// --- ROTA DE SUGESTÕES DE RECEITAS (NOVA) ---
+app.get('/api/sugestoes', autenticarToken, async (req, res) => {
+    const { ingrediente } = req.query;
+    if (!ingrediente) return res.status(400).json({ erro: "Ingrediente vazio" });
+
+    try {
+        const resposta = await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            messages: [{
+                role: "user",
+                content: `Retorne um array JSON com 3 receitas curtas de "${ingrediente}". 
+                Use este formato exato: [{"nome": "X", "tempo": "Y"}]. 
+                Não escreva mais nada além do JSON.`
+            }]
+        });
+
+        let textoIA = resposta.choices[0].message.content;
+
+        // LIMPEZA SEGURA: Pega apenas o que está entre [ e ]
+        const inicio = textoIA.indexOf('[');
+        const fim = textoIA.lastIndexOf(']') + 1;
+        
+        if (inicio === -1 || fim === 0) {
+            throw new Error("IA não devolveu um JSON válido");
+        }
+        
+        const jsonLimpo = textoIA.substring(inicio, fim);
+        const sugestoes = JSON.parse(jsonLimpo);
+        res.json(sugestoes);
+
+    } catch (error) {
+        console.error("Erro no Servidor:", error.message);
+        res.status(500).json({ erro: "Erro ao processar receitas" });
+    }
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`✅ Servidor rodando em: http://localhost:${PORT}`);
