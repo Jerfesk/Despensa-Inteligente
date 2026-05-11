@@ -42,23 +42,10 @@
             border-radius: 30px;
         }
 
-        /* Ajuste no Header para conter o botão de adicionar */
-        .header { 
-            padding: 40px 20px 10px; 
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
+        .header { padding: 40px 20px 10px; display: flex; flex-direction: column; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .header h1 { color: var(--text-main); font-size: 22px; display: flex; align-items: center; gap: 8px; }
 
-        /* Novo estilo do botão de adicionar no topo */
         .btn-add-topo {
             background: var(--primary);
             color: white;
@@ -71,68 +58,31 @@
             justify-content: center;
             font-size: 20px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        #area-acoes-massa {
-            display: none;
-            margin-top: 15px;
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #area-acoes-massa { display: none; margin-top: 15px; animation: fadeIn 0.3s; }
 
-        .inventory-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 8px 100px;
-        }
+        .inventory-container { flex: 1; overflow-y: auto; padding: 0 8px 100px; scrollbar-width: none; }
+        .inventory-container::-webkit-scrollbar { display: none; }
 
-        .stock-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 8px;
-            table-layout: fixed;
-        }
-
+        .stock-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
         .col-check { width: 30px; }
         .col-nome { width: auto; }
         .col-qtd { width: 40px; }
         .col-val { width: 60px; }
         .col-actions { width: 110px; }
 
-        .stock-table th {
-            padding: 4px;
-            font-size: 9px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            text-align: center;
-        }
-
+        .stock-table th { padding: 4px; font-size: 9px; color: var(--text-muted); text-transform: uppercase; text-align: center; }
         .stock-table th.col-nome { text-align: left; }
 
         .stock-item { background: white; transition: 0.2s; }
-        .stock-item td {
-            padding: 10px 2px;
-            font-size: 12px;
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        /* AJUSTE PARA DUAS OU MAIS LINHAS NO NOME */
-        .stock-item td.col-nome { 
-            text-align: left; 
-            white-space: normal;    /* Permite quebra de linha */
-            word-break: break-word; 
-            line-height: 1.2;
-            padding-right: 5px;
-        }
-
+        .stock-item td { padding: 10px 2px; font-size: 12px; vertical-align: middle; text-align: center; }
+        .stock-item td.col-nome { text-align: left; white-space: normal; word-break: break-word; line-height: 1.2; }
         .stock-item td:first-child { border-radius: 12px 0 0 12px; padding-left: 8px; }
         .stock-item td:last-child { border-radius: 0 12px 12px 0; padding-right: 5px; }
 
         .stock-item.expired { background-color: var(--status-danger) !important; color: #991b1b; }
         .stock-item.warning { background-color: var(--status-warning) !important; color: #854d0e; }
-        .stock-item:has(input:checked) { background-color: #e8f5e9; box-shadow: inset 3px 0 0 var(--primary); }
 
         .qty-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
 
@@ -144,17 +94,24 @@
 
         /* Modais */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-box { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 340px; max-height: 80vh; overflow-y: auto; }
+        .modal-box { background: white; padding: 25px; border-radius: 25px; width: 100%; max-width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         
-        .loading { padding: 30px; text-align: center; color: var(--primary); font-weight: bold; }
-        .spin { animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .modal-title { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* Estilo dos campos dentro do Modal de Edição */
+        .modal-field { margin-bottom: 15px; }
+        .modal-field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+        .modal-input { width: 100%; height: 45px; border: 1px solid #dfe6dc; border-radius: 10px; padding: 0 12px; font-size: 14px; outline: none; }
+        .modal-input:focus { border: 2px solid var(--primary); }
+
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-modal { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-modal-save { background: var(--primary); color: white; }
+        .btn-modal-cancel { background: #eee; color: #666; }
 
         .nav-bar { position: absolute; bottom: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; text-decoration: none; }
         .nav-item.active { color: var(--primary); }
-
-        input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); }
     </style>
 </head>
 <body>
@@ -186,8 +143,7 @@
                     <th class="col-actions">Ações</th>
                 </tr>
             </thead>
-            <tbody id="corpo-tabela">
-                </tbody>
+            <tbody id="corpo-tabela"></tbody>
         </table>
     </div>
 
@@ -214,11 +170,39 @@
 <div id="modal-receita" class="modal-overlay">
     <div class="modal-box">
         <div id="conteudo-receita"></div>
-        <button onclick="fecharModal()" style="width: 100%; margin-top: 15px; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Fechar</button>
+        <button onclick="fecharModal('modal-receita')" class="btn-modal btn-modal-cancel" style="width:100%; margin-top:15px; background: #dc2626; color: white;">Fechar</button>
+    </div>
+</div>
+
+<div id="modal-edicao" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-title">Editar Produto</div>
+        
+        <div class="modal-field">
+            <label>Produto</label>
+            <input type="text" id="edit-nome" class="modal-input" disabled style="background: #f9f9f9; color: #888;">
+        </div>
+
+        <div class="modal-field">
+            <label>Quantidade</label>
+            <input type="number" id="edit-qtd" class="modal-input" min="1">
+        </div>
+
+        <div class="modal-field">
+            <label>Data de Validade</label>
+            <input type="date" id="edit-val" class="modal-input">
+        </div>
+
+        <div class="modal-buttons">
+            <button onclick="fecharModal('modal-edicao')" class="btn-modal btn-modal-cancel">Cancelar</button>
+            <button id="btn-confirmar-edicao" class="btn-modal btn-modal-save">Salvar</button>
+        </div>
     </div>
 </div>
 
 <script>
+    let itemSendoEditadoId = null;
+
     function getAuthHeaders() {
         const token = localStorage.getItem('token');
         return {
@@ -238,34 +222,18 @@
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
 
-            // Array para armazenar mensagens de alerta
-            let produtosEmAlerta = [];
-
             estoque.forEach(prod => {
                 let classeAlerta = "";
                 let statusTexto = "";
-                let avisoExtra = "";
 
                 if (prod.validade) {
                     const [ano, mes, dia] = prod.validade.split('-');
                     const dataVal = new Date(ano, mes - 1, dia);
                     const diffDias = Math.ceil((dataVal - hoje) / (1000 * 3600 * 24));
 
-                    if (diffDias < 0) { 
-                        classeAlerta = "expired"; 
-                        statusTexto = "Venc."; 
-                        avisoExtra = " 🛑 VENCIDO";
-                        produtosEmAlerta.push(`- ${prod.nome} (VENCEU)`);
-                    }
-                    else if (diffDias <= 7) { 
-                        classeAlerta = "warning"; 
-                        statusTexto = `${diffDias}d`; 
-                        avisoExtra = ` ⚠️ (${diffDias} dias)`;
-                        produtosEmAlerta.push(`- ${prod.nome} (Vence em ${diffDias} dia(s))`);
-                    }
-                    else { 
-                        statusTexto = `${diffDias}d`; 
-                    }
+                    if (diffDias < 0) { classeAlerta = "expired"; statusTexto = "Venc."; }
+                    else if (diffDias <= 7) { classeAlerta = "warning"; statusTexto = `${diffDias}d`; }
+                    else { statusTexto = `${diffDias}d`; }
                 }
 
                 const tr = document.createElement('tr');
@@ -281,7 +249,7 @@
                     <td class="col-actions">
                         <div class="actions">
                             <button class="btn-action btn-recipe" onclick="gerarReceita('${prod.nome}')">Receita</button>
-                            <button class="btn-action btn-edit" onclick="abrirEdicao(${prod.id}, ${prod.quantidade}, '${prod.validade}')">
+                            <button class="btn-action btn-edit" onclick="abrirEdicao(${prod.id}, '${prod.nome.replace(/'/g, "\\'")}', ${prod.quantidade}, '${prod.validade}')">
                                 <iconify-icon icon="lucide:pencil"></iconify-icon>
                             </button>
                             <button class="btn-action btn-delete" onclick="deletarItem(${prod.id})">
@@ -292,15 +260,56 @@
                 `;
                 corpo.appendChild(tr);
             });
-
-            // Lógica do Alert (Igual ao seu original)
-            if (produtosEmAlerta.length > 0) {
-                setTimeout(() => {
-                    alert("Produtos com atenção necessária:\n\n" + produtosEmAlerta.join("\n"));
-                }, 500);
-            }
-
         } catch (error) { console.error("Erro:", error); }
+    }
+
+    // FUNÇÃO PARA ABRIR O NOVO MODAL DE EDIÇÃO
+    function abrirEdicao(id, nome, qtd, validade) {
+        itemSendoEditadoId = id;
+        document.getElementById('edit-nome').value = nome;
+        document.getElementById('edit-qtd').value = qtd;
+        document.getElementById('edit-val').value = validade || '';
+        
+        document.getElementById('modal-edicao').style.display = 'flex';
+
+        // Configura o botão de salvar para este item específico
+        document.getElementById('btn-confirmar-edicao').onclick = salvarEdicao;
+    }
+
+    async function salvarEdicao() {
+        const novaQtd = document.getElementById('edit-qtd').value;
+        const novaVal = document.getElementById('edit-val').value;
+
+        if (!novaQtd || novaQtd < 1) { alert("Informe uma quantidade válida."); return; }
+
+        try {
+            const response = await fetch(`/api/estoque/${itemSendoEditadoId}`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ 
+                    quantidade: parseInt(novaQtd), 
+                    validade: novaVal 
+                })
+            });
+
+            if (response.ok) {
+                fecharModal('modal-edicao');
+                carregarEstoque();
+            } else {
+                alert("Erro ao atualizar produto.");
+            }
+        } catch (err) {
+            console.error("Erro na edição:", err);
+        }
+    }
+
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // Manter as outras funções (deletar, receita, etc.)
+    async function deletarItem(id) {
+        if (!confirm("Excluir item?")) return;
+        await fetch(`/api/estoque/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+        carregarEstoque();
     }
 
     function atualizarBotaoMassa() {
@@ -308,51 +317,19 @@
         document.getElementById('area-acoes-massa').style.display = selecionados.length >= 2 ? 'block' : 'none';
     }
 
-    async function gerarReceitaMultipla() {
-        const selecionados = document.querySelectorAll('#corpo-tabela input[type="checkbox"]:checked');
-        const nomes = Array.from(selecionados).map(cb => cb.closest('tr').querySelector('.col-nome b').innerText);
-        gerarReceita(nomes.join(', '));
-    }
-
     async function gerarReceita(nome) {
         const modal = document.getElementById('modal-receita');
         const conteudo = document.getElementById('conteudo-receita');
         modal.style.display = 'flex';
-        conteudo.innerHTML = `<div class="loading"><iconify-icon icon="lucide:loader-2" class="spin"></iconify-icon><br>Chef IA criando receita para: ${nome}...</div>`;
-
+        conteudo.innerHTML = `<div style="text-align:center; padding:20px;"><iconify-icon icon="lucide:loader-2" style="animation:spin 1s linear infinite; font-size:30px; color:var(--primary);"></iconify-icon><br><br>Chef IA criando receita para: ${nome}...</div>`;
         try {
             const response = await fetch(`/receita/${encodeURIComponent(nome)}`, { headers: getAuthHeaders() });
             const receita = await response.json();
-
-            if (receita.erro) { conteudo.innerHTML = "Erro ao gerar receita."; return; }
-
             let html = `<h3 style="color:#4f46e5; border-bottom:1px solid #eee; padding-bottom:8px;">🍽️ ${receita.nome}</h3>`;
-            html += `<h4 style="margin-top:15px; font-size:14px;">🛒 Ingredientes:</h4><ul style="font-size:12px; margin-left:15px; color:#444;">` + 
-                    receita.ingredientes.map(i => `<li>${i}</li>`).join('') + `</ul>`;
-            html += `<h4 style="margin-top:15px; font-size:14px;">👨‍🍳 Preparo:</h4><ol style="font-size:12px; margin-left:15px; color:#444;">` + 
-                    receita.preparo.map(p => `<li style="margin-bottom:5px;">${p}</li>`).join('') + `</ol>`;
-            
+            html += `<h4 style="margin-top:15px; font-size:14px;">🛒 Ingredientes:</h4><ul style="font-size:12px; margin-left:15px; color:#444;">` + receita.ingredientes.map(i => `<li>${i}</li>`).join('') + `</ul>`;
+            html += `<h4 style="margin-top:15px; font-size:14px;">👨‍🍳 Preparo:</h4><ol style="font-size:12px; margin-left:15px; color:#444;">` + receita.preparo.map(p => `<li style="margin-bottom:5px;">${p}</li>`).join('') + `</ol>`;
             conteudo.innerHTML = html;
         } catch (e) { conteudo.innerHTML = "Erro na conexão com a IA."; }
-    }
-
-    function fecharModal() { document.getElementById('modal-receita').style.display = 'none'; }
-
-    async function deletarItem(id) {
-        if (!confirm("Excluir item?")) return;
-        await fetch(`/api/estoque/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
-        carregarEstoque();
-    }
-
-    function abrirEdicao(id, qtd, val) {
-        const nQtd = prompt("Nova Qtd:", qtd);
-        if (nQtd) {
-            fetch(`/api/estoque/${id}`, {
-                method: 'PUT',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ quantidade: parseInt(nQtd), validade: val })
-            }).then(() => carregarEstoque());
-        }
     }
 
     window.onload = carregarEstoque;
