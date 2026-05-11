@@ -1,53 +1,189 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Meu Estoque - Despensa Inteligente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Despensa - Estoque Pro</title>
+    
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f8f9fa; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px #ccc; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #007bff; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        
-        .vencendo { background-color: #fff3cd !important; } 
-        .vencido { background-color: #f8d7da !important; color: #721c24; font-weight: bold; } 
+        :root {
+            --primary: #387d39;
+            --background: #f1f6e9;
+            --card-bg: #ffffff;
+            --text-main: #1a461a;
+            --text-muted: #677f64;
+            --status-warning: #fef9c3;
+            --status-danger: #fee2e2;
+        }
 
-        .btn-del { background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
-        .btn-edit { background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
-        .btn-recipe { background: #6f42c1; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-right: 5px; }
-        .btn-voltar { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
-        .acoes { display: flex; align-items: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;}
+        body {
+            display: flex;
+            justify-content: center; 
+            align-items: center;     
+            min-height: 100vh;       
+            margin: 0;
+            background-color: #e5e7eb;
+        }
+
+        .app-container {
+            width: 375px;
+            height: 812px;
+            background-color: var(--background);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border-radius: 30px;
+        }
+
+        /* Ajuste no Header para conter o botão de adicionar */
+        .header { 
+            padding: 40px 20px 10px; 
+            display: flex;
+            flex-direction: column;
+        }
         
-        .modal-box { background: white; padding: 25px; border-radius: 10px; width: 300px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; }
-        .modal-box label { display: block; text-align: left; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
-        .modal-box input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header h1 { color: var(--text-main); font-size: 22px; display: flex; align-items: center; gap: 8px; }
+
+        /* Novo estilo do botão de adicionar no topo */
+        .btn-add-topo {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #area-acoes-massa {
+            display: none;
+            margin-top: 15px;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .inventory-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 100px;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            table-layout: fixed;
+        }
+
+        .col-check { width: 30px; }
+        .col-nome { width: auto; }
+        .col-qtd { width: 40px; }
+        .col-val { width: 60px; }
+        .col-actions { width: 110px; }
+
+        .stock-table th {
+            padding: 4px;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .stock-table th.col-nome { text-align: left; }
+
+        .stock-item { background: white; transition: 0.2s; }
+        .stock-item td {
+            padding: 10px 2px;
+            font-size: 12px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        /* AJUSTE PARA DUAS OU MAIS LINHAS NO NOME */
+        .stock-item td.col-nome { 
+            text-align: left; 
+            white-space: normal;    /* Permite quebra de linha */
+            word-break: break-word; 
+            line-height: 1.2;
+            padding-right: 5px;
+        }
+
+        .stock-item td:first-child { border-radius: 12px 0 0 12px; padding-left: 8px; }
+        .stock-item td:last-child { border-radius: 0 12px 12px 0; padding-right: 5px; }
+
+        .stock-item.expired { background-color: var(--status-danger) !important; color: #991b1b; }
+        .stock-item.warning { background-color: var(--status-warning) !important; color: #854d0e; }
+        .stock-item:has(input:checked) { background-color: #e8f5e9; box-shadow: inset 3px 0 0 var(--primary); }
+
+        .qty-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+
+        .actions { display: flex; gap: 4px; justify-content: center; }
+        .btn-action { border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; height: 26px; }
+        .btn-recipe { background: #4f46e5; padding: 0 5px; font-size: 9px; font-weight: bold; text-transform: uppercase; min-width: 50px; }
+        .btn-edit { background: #16a34a; width: 26px; }
+        .btn-delete { background: #dc2626; width: 26px; }
+
+        /* Modais */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-box { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 340px; max-height: 80vh; overflow-y: auto; }
         
-        .modal-receita-box { background: white; padding: 30px; border-radius: 10px; width: 500px; max-width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; }
-        .modal-receita-box h3 { color: #6f42c1; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;}
-        
-        .modal-botoes { margin-top: 20px; display: flex; justify-content: space-between; }
-        .btn-salvar-modal { background: #007bff; color: white; border: none; padding: 10px; width: 48%; border-radius: 5px; cursor: pointer; font-weight: bold;}
-        .btn-cancelar-modal { background: #6c757d; color: white; border: none; padding: 10px; width: 48%; border-radius: 5px; cursor: pointer; font-weight: bold;}
-        .btn-fechar-receita { background: #dc3545; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px;}
-        
-        .loading { text-align: center; color: #6f42c1; font-weight: bold; font-size: 18px; padding: 20px;}
+        .loading { padding: 30px; text-align: center; color: var(--primary); font-weight: bold; }
+        .spin { animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .nav-bar { position: absolute; bottom: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; text-decoration: none; }
+        .nav-item.active { color: var(--primary); }
+
+        input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="btn-voltar">← Voltar ao Início</a>
-        <h1>📦 Meu Estoque</h1>
-        <table id="tabela-estoque">
+
+<div class="app-container">
+    <div class="header">
+        <div class="header-top">
+            <h1>📦 Meu Estoque</h1>
+            <button class="btn-add-topo" onclick="window.location.href='index.html'">
+                <iconify-icon icon="lucide:plus"></iconify-icon>
+            </button>
+        </div>
+        
+        <div id="area-acoes-massa">
+            <button onclick="gerarReceitaMultipla()" class="btn-action btn-recipe" style="width: 100%; height: 35px;">
+                ✨ Gerar Receita com Selecionados
+            </button>
+        </div>
+    </div>
+
+    <div class="inventory-container">
+        <table class="stock-table">
             <thead>
                 <tr>
-                    <th>Produto</th>
-                    <th>Qtd</th>
-                    <th>Validade</th>
-                    <th>Ações</th>
+                    <th class="col-check"></th>
+                    <th class="col-nome">Produto</th>
+                    <th class="col-qtd">QTD</th>
+                    <th class="col-val">Validade</th>
+                    <th class="col-actions">Ações</th>
                 </tr>
             </thead>
             <tbody id="corpo-tabela">
@@ -55,181 +191,172 @@
         </table>
     </div>
 
-    <div id="modal-editar" class="modal-overlay">
-        <div class="modal-box">
-            <h3>✏️ Alterar Produto</h3>
-            <input type="hidden" id="edit-id">
-            <label>Quantidade:</label>
-            <input type="number" id="edit-qtd" min="1">
-            <label>Data de Validade:</label>
-            <input type="date" id="edit-validade">
-            <div class="modal-botoes">
-                <button class="btn-cancelar-modal" onclick="fecharModalEditar()">Cancelar</button>
-                <button class="btn-salvar-modal" onclick="salvarEdicao()">Salvar</button>
-            </div>
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-item">
+            <iconify-icon icon="lucide:home"></iconify-icon>
+            <span>Início</span>
+        </a>
+        <div class="nav-item active">
+            <iconify-icon icon="lucide:package"></iconify-icon>
+            <span>Estoque</span>
         </div>
-    </div>
-
-    <div id="modal-receita" class="modal-overlay">
-        <div class="modal-receita-box">
-            <div id="conteudo-receita"></div>
-            <button class="btn-fechar-receita" onclick="fecharModalReceita()">Fechar Receita</button>
+        <div class="nav-item">
+            <iconify-icon icon="lucide:chef-hat"></iconify-icon>
+            <span>Receitas</span>
         </div>
+        <div class="nav-item">
+            <iconify-icon icon="lucide:user"></iconify-icon>
+            <span>Perfil</span>
+        </div>
+    </nav>
+</div>
+
+<div id="modal-receita" class="modal-overlay">
+    <div class="modal-box">
+        <div id="conteudo-receita"></div>
+        <button onclick="fecharModal()" style="width: 100%; margin-top: 15px; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
+</div>
 
-    <script>
-        // Função para formatar data de YYYY-MM-DD para DD/MM/YYYY
-        function formatarDataBR(dataISO) {
-            if (!dataISO) return '-';
-            const partes = dataISO.split('-'); 
-            if (partes.length !== 3) return dataISO;
-            return `${partes[2]}/${partes[1]}/${partes[0]}`; 
-        }
+<script>
+    function getAuthHeaders() {
+        const token = localStorage.getItem('token');
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+    }
 
-        // Função para centralizar os Headers com Token
-        function getAuthHeaders() {
-            const token = localStorage.getItem('token');
-            return {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            };
-        }
+    async function carregarEstoque() {
+        try {
+            const response = await fetch('/api/estoque', { headers: getAuthHeaders() });
+            if (!response.ok) { window.location.href = 'login.html'; return; }
 
-        async function carregarEstoque() {
-            try {
-                const response = await fetch('/api/estoque', {
-                    method: 'GET',
-                    headers: getAuthHeaders()
-                });
+            const estoque = await response.json();
+            const corpo = document.getElementById('corpo-tabela');
+            corpo.innerHTML = '';
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
 
-                if (!response.ok) {
-                    alert("Acesso negado. Por favor, faça login novamente.");
-                    window.location.href = 'login.html';
-                    return;
-                }
+            // Array para armazenar mensagens de alerta
+            let produtosEmAlerta = [];
 
-                const estoque = await response.json();
-                const corpo = document.getElementById('corpo-tabela');
-                corpo.innerHTML = '';
+            estoque.forEach(prod => {
+                let classeAlerta = "";
+                let statusTexto = "";
+                let avisoExtra = "";
 
-                const hoje = new Date();
-                hoje.setHours(0, 0, 0, 0);
-                let produtosEmAlerta = [];
+                if (prod.validade) {
+                    const [ano, mes, dia] = prod.validade.split('-');
+                    const dataVal = new Date(ano, mes - 1, dia);
+                    const diffDias = Math.ceil((dataVal - hoje) / (1000 * 3600 * 24));
 
-                estoque.forEach(prod => {
-                    const tr = document.createElement('tr');
-                    let classeCss = "";
-                    let avisoExtra = "";
-
-                    if (prod.validade) {
-                        const [ano, mes, dia] = prod.validade.split('-');
-                        const dataValidade = new Date(ano, mes - 1, dia);
-                        const diferencaTempo = dataValidade.getTime() - hoje.getTime();
-                        const diferencaDias = Math.ceil(diferencaTempo / (1000 * 3600 * 24));
-
-                        if (diferencaDias < 0) {
-                            classeCss = "vencido";
-                            avisoExtra = " 🛑 VENCIDO";
-                            produtosEmAlerta.push(`- ${prod.nome} (VENCEU)`);
-                        } else if (diferencaDias <= 7) {
-                            classeCss = "vencendo";
-                            avisoExtra = ` ⚠️ (${diferencaDias} dias)`;
-                            produtosEmAlerta.push(`- ${prod.nome} (Vence em ${diferencaDias} dia(s))`);
-                        }
+                    if (diffDias < 0) { 
+                        classeAlerta = "expired"; 
+                        statusTexto = "Venc."; 
+                        avisoExtra = " 🛑 VENCIDO";
+                        produtosEmAlerta.push(`- ${prod.nome} (VENCEU)`);
                     }
-
-                    tr.className = classeCss;
-                    tr.innerHTML = `
-                        <td>${prod.nome}</td>
-                        <td>${prod.quantidade}</td>
-                        <td>${formatarDataBR(prod.validade)}${avisoExtra}</td>
-                        <td class="acoes">
-                            <button class="btn-recipe" onclick="gerarReceita('${prod.nome}')">✨ Receita</button>
-                            <button class="btn-edit" onclick="abrirModalEditar(${prod.id}, ${prod.quantidade}, '${prod.validade}')">✏️</button>
-                            <button class="btn-del" onclick="deletarItem(${prod.id})">🗑️</button>
-                        </td>
-                    `;
-                    corpo.appendChild(tr);
-                });
-
-                if (produtosEmAlerta.length > 0) {
-                    setTimeout(() => {
-                        alert("Produtos com atenção necessária:\n\n" + produtosEmAlerta.join("\n"));
-                    }, 500);
-                }
-            } catch (error) {
-                console.error("Erro ao carregar estoque:", error);
-            }
-        }
-
-        async function gerarReceita(nomeProduto) {
-            const modal = document.getElementById('modal-receita');
-            const conteudo = document.getElementById('conteudo-receita');
-            modal.style.display = 'flex';
-            conteudo.innerHTML = `<div class="loading">✨ O Chef IA está criando uma receita para ${nomeProduto}...</div>`;
-
-            try {
-                const response = await fetch(`/receita/${encodeURIComponent(nomeProduto)}`, {
-                    headers: getAuthHeaders()
-                });
-                const receita = await response.json();
-
-                if (receita.erro) {
-                    conteudo.innerHTML = `<p style="color:red">Erro: ${receita.erro}</p>`;
-                    return;
+                    else if (diffDias <= 7) { 
+                        classeAlerta = "warning"; 
+                        statusTexto = `${diffDias}d`; 
+                        avisoExtra = ` ⚠️ (${diffDias} dias)`;
+                        produtosEmAlerta.push(`- ${prod.nome} (Vence em ${diffDias} dia(s))`);
+                    }
+                    else { 
+                        statusTexto = `${diffDias}d`; 
+                    }
                 }
 
-                let html = `<h3>🍽️ ${receita.nome}</h3>`;
-                html += `<h4>🛒 Ingredientes:</h4><ul>` + receita.ingredientes.map(i => `<li>${i}</li>`).join('') + `</ul>`;
-                html += `<h4>👨‍🍳 Preparo:</h4><ol>` + receita.preparo.map(p => `<li>${p}</li>`).join('') + `</ol>`;
-                conteudo.innerHTML = html;
-            } catch (e) {
-                conteudo.innerHTML = `<p style="color:red">Erro ao conectar com a IA.</p>`;
+                const tr = document.createElement('tr');
+                tr.className = `stock-item ${classeAlerta}`;
+                tr.innerHTML = `
+                    <td class="col-check"><input type="checkbox" onchange="atualizarBotaoMassa()"></td>
+                    <td class="col-nome"><b>${prod.nome}</b></td>
+                    <td class="col-qtd"><span class="qty-badge">${prod.quantidade}</span></td>
+                    <td class="col-val" style="font-size: 10px; line-height: 1.1;">
+                        ${prod.validade ? prod.validade.split('-').reverse().slice(0,2).join('/') : '--'}<br>
+                        <small style="opacity: 0.8">${statusTexto}</small>
+                    </td>
+                    <td class="col-actions">
+                        <div class="actions">
+                            <button class="btn-action btn-recipe" onclick="gerarReceita('${prod.nome}')">Receita</button>
+                            <button class="btn-action btn-edit" onclick="abrirEdicao(${prod.id}, ${prod.quantidade}, '${prod.validade}')">
+                                <iconify-icon icon="lucide:pencil"></iconify-icon>
+                            </button>
+                            <button class="btn-action btn-delete" onclick="deletarItem(${prod.id})">
+                                <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                corpo.appendChild(tr);
+            });
+
+            // Lógica do Alert (Igual ao seu original)
+            if (produtosEmAlerta.length > 0) {
+                setTimeout(() => {
+                    alert("Produtos com atenção necessária:\n\n" + produtosEmAlerta.join("\n"));
+                }, 500);
             }
-        }
 
-        async function salvarEdicao() {
-            const id = document.getElementById('edit-id').value;
-            const quantidade = document.getElementById('edit-qtd').value;
-            const validade = document.getElementById('edit-validade').value;
+        } catch (error) { console.error("Erro:", error); }
+    }
 
-            const response = await fetch(`/api/estoque/${id}`, {
+    function atualizarBotaoMassa() {
+        const selecionados = document.querySelectorAll('#corpo-tabela input[type="checkbox"]:checked');
+        document.getElementById('area-acoes-massa').style.display = selecionados.length >= 2 ? 'block' : 'none';
+    }
+
+    async function gerarReceitaMultipla() {
+        const selecionados = document.querySelectorAll('#corpo-tabela input[type="checkbox"]:checked');
+        const nomes = Array.from(selecionados).map(cb => cb.closest('tr').querySelector('.col-nome b').innerText);
+        gerarReceita(nomes.join(', '));
+    }
+
+    async function gerarReceita(nome) {
+        const modal = document.getElementById('modal-receita');
+        const conteudo = document.getElementById('conteudo-receita');
+        modal.style.display = 'flex';
+        conteudo.innerHTML = `<div class="loading"><iconify-icon icon="lucide:loader-2" class="spin"></iconify-icon><br>Chef IA criando receita para: ${nome}...</div>`;
+
+        try {
+            const response = await fetch(`/receita/${encodeURIComponent(nome)}`, { headers: getAuthHeaders() });
+            const receita = await response.json();
+
+            if (receita.erro) { conteudo.innerHTML = "Erro ao gerar receita."; return; }
+
+            let html = `<h3 style="color:#4f46e5; border-bottom:1px solid #eee; padding-bottom:8px;">🍽️ ${receita.nome}</h3>`;
+            html += `<h4 style="margin-top:15px; font-size:14px;">🛒 Ingredientes:</h4><ul style="font-size:12px; margin-left:15px; color:#444;">` + 
+                    receita.ingredientes.map(i => `<li>${i}</li>`).join('') + `</ul>`;
+            html += `<h4 style="margin-top:15px; font-size:14px;">👨‍🍳 Preparo:</h4><ol style="font-size:12px; margin-left:15px; color:#444;">` + 
+                    receita.preparo.map(p => `<li style="margin-bottom:5px;">${p}</li>`).join('') + `</ol>`;
+            
+            conteudo.innerHTML = html;
+        } catch (e) { conteudo.innerHTML = "Erro na conexão com a IA."; }
+    }
+
+    function fecharModal() { document.getElementById('modal-receita').style.display = 'none'; }
+
+    async function deletarItem(id) {
+        if (!confirm("Excluir item?")) return;
+        await fetch(`/api/estoque/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+        carregarEstoque();
+    }
+
+    function abrirEdicao(id, qtd, val) {
+        const nQtd = prompt("Nova Qtd:", qtd);
+        if (nQtd) {
+            fetch(`/api/estoque/${id}`, {
                 method: 'PUT',
                 headers: getAuthHeaders(),
-                body: JSON.stringify({ quantidade: parseInt(quantidade), validade })
-            });
-
-            if (response.ok) {
-                fecharModalEditar();
-                carregarEstoque();
-            } else {
-                alert("Erro ao salvar alteração.");
-            }
+                body: JSON.stringify({ quantidade: parseInt(nQtd), validade: val })
+            }).then(() => carregarEstoque());
         }
+    }
 
-        async function deletarItem(id) {
-            if (!confirm("Tem certeza que deseja excluir?")) return;
+    window.onload = carregarEstoque;
+</script>
 
-            const response = await fetch(`/api/estoque/${id}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders()
-            });
-
-            if (response.ok) carregarEstoque();
-        }
-
-        function abrirModalEditar(id, qtd, val) {
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-qtd').value = qtd;
-            document.getElementById('edit-validade').value = val;
-            document.getElementById('modal-editar').style.display = 'flex';
-        }
-
-        function fecharModalEditar() { document.getElementById('modal-editar').style.display = 'none'; }
-        function fecharModalReceita() { document.getElementById('modal-receita').style.display = 'none'; }
-
-        // Executa ao abrir a página
-        window.onload = carregarEstoque;
-    </script>
 </body>
 </html>
