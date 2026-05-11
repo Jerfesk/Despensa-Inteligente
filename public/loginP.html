@@ -21,28 +21,24 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* Mudamos para min-height para evitar quebras em telas pequenas */
       min-height: 100vh; 
-      padding: 20px; /* Margem de segurança para não encostar nas bordas do navegador */
+      padding: 20px; 
     }
 
     .container {
-      /* Em vez de largura fixa, usamos largura máxima */
       width: 100%;
       max-width: 375px; 
-      
-      /* Removida a altura fixa de 812px que causava o problema do zoom */
       background: linear-gradient(to bottom right, #f5f9ed, #e3efd7);
       padding: 40px 24px;
       position: relative;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* Adicionei uma sombra para destacar no PC */
+      border-radius: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
 
     .logo {
       display: flex;
       justify-content: center;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     h1 {
@@ -53,17 +49,29 @@
       line-height: 38px;
     }
 
-    /* O restante dos estilos permanece igual, mas ajuste os margins se achar necessário */
     .subtitle {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 15px;
       color: #1A461A;
       font-size: 15px;
       font-weight: 500;
     }
 
+    /* ESTILO DA MENSAGEM DE ERRO */
+    #mensagem-erro {
+      display: none;
+      background: #fee2e2;
+      color: #dc2626;
+      font-size: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+      border: 1px solid #fecaca;
+    }
+
     .inputs {
-      margin-top: 30px;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -77,6 +85,23 @@
       align-items: center;
       padding: 0 16px;
       border: 1px solid #ddd;
+      transition: 0.3s;
+    }
+
+    .input-box:focus-within {
+      border-color: #387D39;
+    }
+
+    .left-icon {
+      margin-right: 10px;
+      color: #7B9676;
+      font-size: 20px;
+    }
+
+    .eye-icon {
+      cursor: pointer;
+      color: #7B9676;
+      font-size: 20px;
     }
 
     .input-box input {
@@ -85,6 +110,19 @@
       outline: none;
       background: transparent;
       font-size: 16px;
+      color: #1A461A;
+    }
+
+    .forgot {
+      text-align: right;
+      margin-top: 12px;
+    }
+
+    .forgot a {
+      color: #387D39;
+      font-size: 13px;
+      text-decoration: none;
+      font-weight: 600;
     }
 
     .btn {
@@ -98,6 +136,12 @@
       font-weight: bold;
       margin-top: 25px;
       cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:disabled {
+      background: #a5c6a6;
+      cursor: not-allowed;
     }
 
     .divider {
@@ -131,11 +175,13 @@
       border: none;
       background: white;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-</style>
-
-    
-
+  </style>
 </head>
 
 <body>
@@ -143,84 +189,39 @@
   <div class="container">
 
     <div class="logo">
-
-      <svg width="100" height="100" viewBox="0 0 100 100">
-
-        <path
-          d="M48 85C48 85 15 65 5 30C-5 0 20 0 35 5C55 10 58 30 48 85Z"
-          fill="#75B632">
-        </path>
-
-        <path
-          d="M52 85C52 85 85 65 95 30C105 0 80 0 65 5C45 10 42 30 52 85Z"
-          fill="#3A7E27">
-        </path>
-
+      <svg width="80" height="80" viewBox="0 0 100 100">
+        <path d="M48 85C48 85 15 65 5 30C-5 0 20 0 35 5C55 10 58 30 48 85Z" fill="#75B632"></path>
+        <path d="M52 85C52 85 85 65 95 30C105 0 80 0 65 5C45 10 42 30 52 85Z" fill="#3A7E27"></path>
       </svg>
-
     </div>
 
-    <h1>
-      Despensa <br>
-      Inteligente
-    </h1>
+    <h1>Despensa <br> Inteligente</h1>
 
     <p class="subtitle">
       Sua despensa inteligente,<br>
       seu planeta agradece.
     </p>
 
+    <div id="mensagem-erro"></div>
+
     <div class="inputs">
-
-      <!-- EMAIL -->
-
       <div class="input-box">
-
-        <iconify-icon
-          class="left-icon"
-          icon="lucide:mail">
-        </iconify-icon>
-
-        <input
-          type="email"
-          id="email"
-          placeholder="Digite seu e-mail"
-        >
-
+        <iconify-icon class="left-icon" icon="lucide:mail"></iconify-icon>
+        <input type="email" id="email" placeholder="Digite seu e-mail">
       </div>
 
-      <!-- SENHA -->
-
       <div class="input-box">
-
-        <iconify-icon
-          class="left-icon"
-          icon="lucide:lock">
-        </iconify-icon>
-
-        <input
-          type="password"
-          id="senha"
-          placeholder="Digite sua senha"
-        >
-
-        <iconify-icon
-          id="toggleSenha"
-          class="eye-icon"
-          icon="lucide:eye">
-        </iconify-icon>
-
+        <iconify-icon class="left-icon" icon="lucide:lock"></iconify-icon>
+        <input type="password" id="senha" placeholder="Digite sua senha">
+        <iconify-icon id="toggleSenha" class="eye-icon" icon="lucide:eye"></iconify-icon>
       </div>
-
     </div>
 
     <div class="forgot">
-      <a href="#">
-        Esqueci minha senha
-      </a>
+      <a href="esqueci-senha.html">Esqueci minha senha</a>
     </div>
 
-    <button class="btn" id="btnEntrar">
+    <button class="btn" id="btnEntrar" onclick="fazerLogin()">
       Entrar
     </button>
 
@@ -229,91 +230,83 @@
     </div>
 
     <div class="social">
-
-      <button>
-
-        <iconify-icon
-          class="google"
-          icon="logos:google-icon">
-        </iconify-icon>
-
-      </button>
-
-      <button>
-
-        <iconify-icon
-          class="apple"
-          icon="mdi:apple">
-        </iconify-icon>
-
-      </button>
-
-      <button>
-
-        <iconify-icon
-          class="mail"
-          icon="lucide:mail">
-        </iconify-icon>
-
-      </button>
-
+      <button><iconify-icon icon="logos:google-icon"></iconify-icon></button>
+      <button><iconify-icon icon="mdi:apple"></iconify-icon></button>
+      <button><iconify-icon icon="lucide:mail"></iconify-icon></button>
     </div>
 
   </div>
 
   <script>
+    // FUNÇÃO DE LOGIN (Trazida do código "cru" com melhorias)
+    async function fazerLogin() {
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const msg = document.getElementById('mensagem-erro');
+        const btn = document.getElementById('btnEntrar');
 
-    // BOTÃO ENTRAR
+        // Validação simples antes de tentar o fetch
+        if (!email || !senha) {
+            msg.textContent = "Preencha todos os campos!";
+            msg.style.display = "block";
+            return;
+        }
 
-    const botao = document.getElementById("btnEntrar");
+        // Estado de carregamento
+        btn.disabled = true;
+        btn.textContent = "Verificando...";
+        msg.style.display = "none";
 
-    botao.addEventListener("click", function(){
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
 
-      const email = document.getElementById("email").value;
+            const data = await response.json();
 
-      const senha = document.getElementById("senha").value;
+            if (response.ok && data.token) {
+                // ✅ Salva o token no localStorage
+                localStorage.setItem('token', data.token);
+                
+                // Redireciona para a página principal (Estoque)
+                window.location.href = 'index.html';
+            } else {
+                // Exibe o erro retornado pela API
+                msg.textContent = data.erro || "Falha no login. Verifique seus dados.";
+                msg.style.display = "block";
+            }
+        } catch (error) {
+            console.error("Erro ao conectar:", error);
+            msg.textContent = "Servidor indisponível ou erro de rede.";
+            msg.style.display = "block";
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Entrar";
+        }
+    }
 
-      if(email === "" || senha === ""){
-
-        alert("Preencha todos os campos!");
-
-        return;
-
-      }
-
-      alert(
-        "Login realizado com sucesso!\n\n" +
-        "Email: " + email +
-        "\nSenha: " + senha
-      );
-
-    });
-
-
-    // MOSTRAR E ESCONDER SENHA
-
+    // MOSTRAR E ESCONDER SENHA (Lógica que já estava no seu código)
     const olho = document.getElementById("toggleSenha");
-
     const campoSenha = document.getElementById("senha");
 
     olho.addEventListener("click", function(){
-
       if(campoSenha.type === "password"){
-
         campoSenha.type = "text";
-
         olho.setAttribute("icon", "lucide:eye-off");
-
-      }else{
-
+      } else {
         campoSenha.type = "password";
-
         olho.setAttribute("icon", "lucide:eye");
-
       }
-
     });
 
+    // Permitir login ao apertar "Enter" no teclado
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            fazerLogin();
+        }
+    });
   </script>
 
 </body>

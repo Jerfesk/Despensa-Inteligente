@@ -2,37 +2,190 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha - Despensa Inteligente</title>
+    
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f8f9fa; }
-        .form-card { border: 1px solid #ccc; padding: 30px; border-radius: 10px; width: 350px; background: white; box-shadow: 2px 2px 10px #ccc; }
-        h2 { text-align: center; color: #333; margin-top: 0; }
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
-        input { width: 100%; margin-top: 5px; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        .msg-status { margin-top: 15px; font-size: 14px; text-align: center; min-height: 20px; }
-        .btn-voltar { background-color: #6c757d; margin-top: 10px; }
+        :root {
+            --primary: #387d39;
+            --background: #f1f6e9;
+            --text-main: #1a461a;
+            --text-muted: #677f64;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e5e7eb;
+        }
+
+        .app-container {
+            width: 375px;
+            height: 812px;
+            background: linear-gradient(to bottom right, #f5f9ed, #e3efd7);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border-radius: 30px;
+            overflow: hidden;
+            padding: 40px 24px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-top: 10px;
+        }
+
+        .back-btn {
+            background: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .content { text-align: center; }
+
+        h2 { color: var(--text-main); font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+        
+        .description {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .field-label {
+            display: block;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            margin-left: 4px;
+        }
+
+        .input-box {
+            background: white;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border: 1px solid #dfe6dc;
+            margin-bottom: 16px;
+            transition: 0.3s;
+        }
+
+        .input-box:focus-within { border-color: var(--primary); }
+
+        .input-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .resend-link {
+            display: block;
+            text-align: right;
+            margin-top: -8px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .resend-link:hover { text-decoration: underline; }
+
+        .btn {
+            width: 100%;
+            height: 54px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-cancelar {
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        #msg-status {
+            margin: 15px 0;
+            font-size: 13px;
+            font-weight: 500;
+            min-height: 20px;
+        }
+
+        .eye-icon { cursor: pointer; color: var(--text-muted); font-size: 20px; }
     </style>
 </head>
 <body>
-    <div class="form-card">
-        <h2>🔄 Nova Senha</h2>
-        <p style="text-align: center; font-size: 14px; color: #666;">Insira o código enviado para o seu e-mail e escolha uma nova senha.</p>
 
-        <label>E-mail:</label>
-        <input type="email" id="email" placeholder="seu@email.com">
+    <div class="app-container">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='login.html'">
+                <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+            </button>
+        </div>
 
-        <label>Código de Recuperação:</label>
-        <input type="text" id="token" placeholder="Ex: a1b2c3d4">
+        <div class="content">
+            <h2>🔄 Nova Senha</h2>
+            <p class="description">
+                Insira o código enviado para o seu e-mail e escolha uma nova senha segura.
+            </p>
 
-        <label>Nova Senha:</label>
-        <input type="password" id="novaSenha" placeholder="Digite sua nova senha">
+            <div id="msg-status"></div>
 
-        <div id="msg-status" class="msg-status"></div>
+            <label class="field-label">E-mail</label>
+            <div class="input-box">
+                <input type="email" id="email" placeholder="seu@email.com">
+            </div>
 
-        <button onclick="salvarNovaSenha()">Atualizar Senha</button>
-        <button class="btn-voltar" onclick="window.location.href='login.html'">Cancelar</button>
+            <label class="field-label">Código de Recuperação</label>
+            <div class="input-box">
+                <input type="text" id="token" placeholder="Ex: a1b2c3d4">
+            </div>
+
+            <label class="field-label">Nova Senha</label>
+            <div class="input-box">
+                <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres">
+                <iconify-icon id="toggleSenha" class="eye-icon" icon="lucide:eye"></iconify-icon>
+            </div>
+
+            <a href="esqueci-senha.html" class="resend-link">Não recebeu o código? Enviar outro</a>
+
+            <button class="btn" id="btnSalvar" onclick="salvarNovaSenha()">Atualizar Senha</button>
+            <button class="btn btn-cancelar" onclick="window.location.href='login.html'">Cancelar</button>
+        </div>
     </div>
 
     <script>
@@ -41,15 +194,17 @@
             const token = document.getElementById('token').value;
             const novaSenha = document.getElementById('novaSenha').value;
             const msgStatus = document.getElementById('msg-status');
+            const btn = document.getElementById('btnSalvar');
 
             if (!email || !token || !novaSenha) {
                 msgStatus.innerText = "⚠️ Preencha todos os campos!";
-                msgStatus.style.color = "orange";
+                msgStatus.style.color = "#d97706";
                 return;
             }
 
             msgStatus.innerText = "Processando... ⏳";
-            msgStatus.style.color = "#007bff";
+            msgStatus.style.color = "var(--primary)";
+            btn.disabled = true;
 
             try {
                 const response = await fetch('/api/auth/redefinir-senha', {
@@ -69,13 +224,27 @@
                 } else {
                     msgStatus.style.color = "red";
                     msgStatus.innerText = "❌ " + (data.erro || "Erro ao redefinir.");
+                    btn.disabled = false;
                 }
             } catch (error) {
-                console.error("Erro:", error);
                 msgStatus.style.color = "red";
                 msgStatus.innerText = "❌ Erro de conexão com o servidor.";
+                btn.disabled = false;
             }
         }
+
+        const olho = document.getElementById("toggleSenha");
+        const campoSenha = document.getElementById("novaSenha");
+
+        olho.addEventListener("click", function(){
+            if(campoSenha.type === "password"){
+                campoSenha.type = "text";
+                olho.setAttribute("icon", "lucide:eye-off");
+            } else {
+                campoSenha.type = "password";
+                olho.setAttribute("icon", "lucide:eye");
+            }
+        });
     </script>
 </body>
 </html>

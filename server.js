@@ -11,7 +11,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'public', 'login.html'));
+res.sendFile(path.join(__dirname, 'public', 'loginP.html'));  //pagina de login/principal
 });
 app.use(express.static('public'));
 app.use(express.json());
