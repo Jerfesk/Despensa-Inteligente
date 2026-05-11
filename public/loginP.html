@@ -9,177 +9,133 @@
   <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
   <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, Helvetica, sans-serif;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    body{
-      background:#f1f6e9;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
+    body {
+      background: #f1f6e9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* Mudamos para min-height para evitar quebras em telas pequenas */
+      min-height: 100vh; 
+      padding: 20px; /* Margem de segurança para não encostar nas bordas do navegador */
     }
 
-    .container{
-      width:375px;
-      min-height:812px;
-      background:linear-gradient(to bottom right,#f5f9ed,#e3efd7);
-      padding:40px 24px;
-      overflow:hidden;
-      position:relative;
-      border-radius:20px;
+    .container {
+      /* Em vez de largura fixa, usamos largura máxima */
+      width: 100%;
+      max-width: 375px; 
+      
+      /* Removida a altura fixa de 812px que causava o problema do zoom */
+      background: linear-gradient(to bottom right, #f5f9ed, #e3efd7);
+      padding: 40px 24px;
+      position: relative;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* Adicionei uma sombra para destacar no PC */
     }
 
-    .logo{
-      display:flex;
-      justify-content:center;
-      margin-top:40px;
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
     }
 
-    h1{
-      text-align:center;
-      color:#1A461A;
-      font-size:32px;
-      margin-top:10px;
-      line-height:38px;
+    h1 {
+      text-align: center;
+      color: #1A461A;
+      font-size: 32px;
+      margin-top: 10px;
+      line-height: 38px;
     }
 
-    .subtitle{
-      text-align:center;
-      margin-top:20px;
-      color:#1A461A;
-      font-size:15px;
-      font-weight:500;
+    /* O restante dos estilos permanece igual, mas ajuste os margins se achar necessário */
+    .subtitle {
+      text-align: center;
+      margin-top: 20px;
+      color: #1A461A;
+      font-size: 15px;
+      font-weight: 500;
     }
 
-    .inputs{
-      margin-top:40px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
+    .inputs {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .input-box{
-      background:white;
-      height:52px;
-      border-radius:14px;
-      display:flex;
-      align-items:center;
-      padding:0 16px;
-      border:1px solid #ddd;
-      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    .input-box {
+      background: white;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border: 1px solid #ddd;
     }
 
-    .input-box iconify-icon{
-      font-size:20px;
-      color:#677F64;
+    .input-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
     }
 
-    .input-box .left-icon{
-      margin-right:10px;
+    .btn {
+      width: 100%;
+      height: 52px;
+      border: none;
+      border-radius: 14px;
+      background: #387D39;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 25px;
+      cursor: pointer;
     }
 
-    .input-box .eye-icon{
-      cursor:pointer;
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 25px 0;
+      color: #7B9676;
+      font-size: 13px;
     }
 
-    .input-box input{
-      flex:1;
-      border:none;
-      outline:none;
-      background:transparent;
-      font-size:16px;
-      color:#1A461A;
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #cdd8c3;
     }
 
-    .forgot{
-      text-align:center;
-      margin-top:20px;
+    .divider span { margin: 0 12px; }
+
+    .social {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 10px;
     }
 
-    .forgot a{
-      text-decoration:none;
-      color:#1A461A;
-      font-weight:bold;
-      font-size:14px;
+    .social button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: white;
+      cursor: pointer;
     }
+</style>
 
-    .btn{
-      width:100%;
-      height:52px;
-      border:none;
-      border-radius:14px;
-      background:#387D39;
-      color:white;
-      font-size:16px;
-      font-weight:bold;
-      margin-top:25px;
-      cursor:pointer;
-      transition:0.3s;
-    }
+    
 
-    .btn:hover{
-      background:#2e6a2f;
-    }
-
-    .divider{
-      display:flex;
-      align-items:center;
-      margin:30px 0;
-      color:#7B9676;
-      font-size:13px;
-    }
-
-    .divider::before,
-    .divider::after{
-      content:"";
-      flex:1;
-      height:1px;
-      background:#cdd8c3;
-    }
-
-    .divider span{
-      margin:0 12px;
-    }
-
-    .social{
-      display:flex;
-      justify-content:center;
-      gap:16px;
-    }
-
-    .social button{
-      width:56px;
-      height:56px;
-      border-radius:50%;
-      border:none;
-      background:white;
-      cursor:pointer;
-      box-shadow:0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .social iconify-icon{
-      font-size:26px;
-    }
-
-    .google{
-      color:#DB4437;
-    }
-
-    .apple{
-      color:black;
-    }
-
-    .mail{
-      color:#1A461A;
-    }
-
-  </style>
 </head>
 
 <body>

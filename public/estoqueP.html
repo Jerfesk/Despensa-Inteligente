@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Despensa - Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #387d39;
+            --background: #f1f6e9;
+            --card-bg: #ffffff;
+            --text-main: #1a461a;
+            --text-muted: #677f64;
+            --status-warning: #fef9c3;
+            --status-danger: #fee2e2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            display: flex;
+            justify-content: center; 
+            align-items: center;     
+            min-height: 100vh;       
+            margin: 0;
+            background-color: #e5e7eb;
+        }
+
+        .app-container {
+            width: 375px;
+            height: 812px;
+            background-color: var(--background);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border-radius: 30px;
+        }
+
+        .header { padding: 40px 20px 10px; }
+        .header h1 { color: var(--text-main); font-size: 22px; }
+
+        .inventory-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 100px;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            table-layout: fixed;
+        }
+
+        /* LARGURAS DE COLUNA AJUSTADAS */
+        .col-check { width: 25px; }
+        .col-nome { width: auto; }
+        .col-qtd { width: 45px; }
+        .col-val { width: 65px; }
+        .col-actions { width: 120px; } /* Aumentado para não cortar o botão */
+
+        .stock-table th {
+            padding: 4px;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            text-align: center; /* Centraliza cabeçalhos por padrão */
+        }
+
+        .stock-table th.col-nome { text-align: left; } /* Produto alinhado à esquerda */
+
+        .stock-item { background: white; }
+        .stock-item td {
+            padding: 10px 2px;
+            font-size: 12px;
+            vertical-align: middle;
+            text-align: center; /* Centraliza conteúdo das células */
+        }
+
+        .stock-item td.col-nome { 
+            text-align: left; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .stock-item td:first-child { border-radius: 12px 0 0 12px; padding-left: 5px; }
+        .stock-item td:last-child { border-radius: 0 12px 12px 0; padding-right: 5px; }
+
+        .stock-item.expired { background-color: var(--status-danger) !important; color: #991b1b; }
+        .stock-item.warning { background-color: var(--status-warning) !important; color: #854d0e; }
+
+        .qty-badge {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .actions { display: flex; gap: 3px; justify-content: center; align-items: center; }
+        
+        .btn-action {
+            border: none; border-radius: 6px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: white; height: 24px;
+        }
+
+        .btn-recipe { 
+            background: #4f46e5; 
+            padding: 0 5px; 
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            min-width: 55px;
+        }
+
+        .btn-edit { background: #16a34a; width: 24px; }
+        .btn-delete { background: #dc2626; width: 24px; }
+
+        .fab {
+            position: absolute; bottom: 90px; right: 20px;
+            width: 56px; height: 56px; background: var(--primary);
+            color: white; border: none; border-radius: 50%;
+            font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 10;
+        }
+
+        .nav-bar {
+            position: absolute; bottom: 0; width: 100%;
+            height: 70px; background: white;
+            display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #eee;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; }
+        .nav-item.active { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>📦 Meu Estoque</h1>
+    </div>
+
+    <div class="inventory-container">
+        <table class="stock-table">
+            <thead>
+                <tr>
+                    <th class="col-check"></th>
+                    <th class="col-nome">Produto</th>
+                    <th class="col-qtd">QTD</th>
+                    <th class="col-val">Validade</th>
+                    <th class="col-actions">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="stock-list"></tbody>
+        </table>
+    </div>
+
+    <button class="fab" onclick="adicionarProduto()">+</button>
+
+    <nav class="nav-bar">
+        <div class="nav-item active"><span>🏠</span><span>Estoque</span></div>
+        <div class="nav-item"><span>🔔</span><span>Alertas</span></div>
+        <div class="nav-item"><span>🍲</span><span>Receitas</span></div>
+        <div class="nav-item"><span>👤</span><span>Perfil</span></div>
+    </nav>
+</div>
+
+<script>
+    let produtos = [
+        { id: 1, nome: "Iogurte Grego", qtd: "02", validade: "2026-05-05", selecionado: false },
+        { id: 2, nome: "Leite Integral", qtd: "12", validade: "2026-05-16", selecionado: false },
+        { id: 3, nome: "Arroz Integral", qtd: "05", validade: "2026-12-20", selecionado: false }
+    ];
+
+    function toggleSelecao(id) {
+        const p = produtos.find(item => item.id === id);
+        if (p) p.selecionado = !p.selecionado;
+    }
+
+    function renderizarTabela() {
+        const lista = document.getElementById('stock-list');
+        lista.innerHTML = '';
+        const hoje = new Date();
+
+        produtos.forEach(p => {
+            const dataVal = new Date(p.validade);
+            const diffTempo = dataVal - hoje;
+            const diffDias = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+            
+            let statusTexto = `${diffDias}d`;
+            let classeAlerta = '';
+
+            if (diffDias < 0) {
+                classeAlerta = 'expired';
+                statusTexto = 'Venc.';
+            } else if (diffDias <= 7) {
+                classeAlerta = 'warning';
+            }
+
+            const tr = document.createElement('tr');
+            tr.className = `stock-item ${classeAlerta}`;
+            tr.innerHTML = `
+                <td class="col-check">
+                    <input type="checkbox" ${p.selecionado ? 'checked' : ''} onchange="toggleSelecao(${p.id})">
+                </td>
+                <td class="col-nome"><b>${p.nome}</b></td>
+                <td class="col-qtd"><span class="qty-badge">${p.qtd}</span></td>
+                <td class="col-val" style="font-size: 10px; line-height: 1.1;">
+                    ${dataVal.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'})}<br>
+                    <small style="opacity: 0.8">${statusTexto}</small>
+                </td>
+                <td class="col-actions">
+                    <div class="actions">
+                        <button class="btn-action btn-recipe" onclick="buscarReceita('${p.nome}')">Receita</button>
+                        <button class="btn-action btn-edit" onclick="editarProduto(${p.id})">✏️</button>
+                        <button class="btn-action btn-delete" onclick="deletarProduto(${p.id})">🗑️</button>
+                    </div>
+                </td>
+            `;
+            lista.appendChild(tr);
+        });
+    }
+
+    function adicionarProduto() {
+        const nome = prompt("Nome do produto:");
+        if (!nome) return;
+        const qtd = prompt("Quantidade:");
+        const validade = prompt("Data de validade (AAAA-MM-DD):");
+
+        if (nome && qtd && validade) {
+            produtos.push({ id: Date.now(), nome, qtd, validade, selecionado: false });
+            renderizarTabela();
+        }
+    }
+
+    function deletarProduto(id) {
+        if (confirm("Deseja remover este item?")) {
+            produtos = produtos.filter(p => p.id !== id);
+            renderizarTabela();
+        }
+    }
+
+    function editarProduto(id) {
+        const p = produtos.find(item => item.id === id);
+        const novoNome = prompt("Editar nome:", p.nome);
+        if (novoNome) {
+            p.nome = novoNome;
+            p.qtd = prompt("Editar quantidade:", p.qtd);
+            renderizarTabela();
+        }
+    }
+
+    function buscarReceita(nome) {
+        alert("Buscando receitas com: " + nome);
+    }
+
+    renderizarTabela();
+</script>
+
+</body>
+</html>
