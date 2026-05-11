@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Despensa - Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .scanner-frame {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
+        }
+        .scan-line {
+            height: 2px;
+            background: #4ade80;
+            box-shadow: 0 0 8px #4ade80;
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        #video-container { transform: scaleX(-1); } /* Espelhar câmera frontal */
+    </style>
+</head>
+<body class="bg-zinc-900 flex justify-center items-center min-h-screen p-4">
+
+    <div id="screen-menu" class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl text-center">
+        <div class="text-5xl mb-4">🍎</div>
+        <h1 class="text-3xl font-bold text-zinc-800 mb-2">Minha Despensa</h1>
+        <p class="text-zinc-500 mb-8">O que deseja fazer hoje?</p>
+
+        <div class="space-y-4">
+            <button onclick="openScanner()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
+                <span>📷</span> Escanear com a Câmera
+            </button>
+            
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
+                <span>📦</span> Ver Meu Estoque
+            </button>
+            
+            <div class="pt-4 border-t border-zinc-100">
+                <p class="text-xs text-zinc-400 mb-2 uppercase tracking-widest">Entrada Manual</p>
+                <input type="text" placeholder="Cole o código aqui..." class="w-full border-2 border-zinc-200 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all">
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-scanner" class="hidden fixed inset-0 bg-black flex flex-col">
+        <div class="absolute top-0 w-full p-6 flex justify-between items-center z-20 text-white">
+            <button onclick="closeScanner()" class="text-2xl p-2 bg-black/20 rounded-full">✕</button>
+            <h2 class="font-medium">Aponte para o código</h2>
+            <button class="text-2xl p-2 bg-black/20 rounded-full">⚡</button>
+        </div>
+
+        <div class="relative flex-1 flex items-center justify-center overflow-hidden">
+            <video id="video" class="absolute min-w-full min-h-full object-cover" autoplay playsinline></video>
+            
+            <div class="z-10 w-64 h-64 relative">
+                <div class="scanner-frame absolute inset-0 rounded-3xl"></div>
+                <div class="scan-line absolute w-full z-20"></div>
+                
+                <div class="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-xl"></div>
+                <div class="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-xl"></div>
+                <div class="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-xl"></div>
+                <div class="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-xl"></div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 w-full flex justify-center z-20">
+            <button onclick="manualInput()" class="bg-white/10 backdrop-blur-md text-white px-8 py-3 rounded-full border border-white/20 font-medium active:scale-95">
+                Inserir manualmente
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const screenMenu = document.getElementById('screen-menu');
+        const screenScanner = document.getElementById('screen-scanner');
+        const video = document.getElementById('video');
+        let stream = null;
+
+        async function openScanner() {
+            screenMenu.classList.add('hidden');
+            screenScanner.classList.remove('hidden');
+
+            try {
+                // Tenta acessar a câmera traseira
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Erro ao acessar a câmera: " + err.message);
+                closeScanner();
+            }
+        }
+
+        function closeScanner() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            screenScanner.classList.add('hidden');
+            screenMenu.classList.remove('hidden');
+        }
+
+        function manualInput() {
+            const code = prompt("Digite o código de barras:");
+            if(code) alert("Código inserido: " + code);
+        }
+    </script>
+</body>
+</html>
