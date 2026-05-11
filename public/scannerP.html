@@ -3,111 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Despensa - Scanner</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Minha Despensa - Smart Scan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .scanner-frame {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
+        :root {
+            --primary-color: #387d39;
+            --bg-color: #fcfdfb;
+            --text-main: #1a1a1a;
+            --text-muted: #677f64;
+            --radius: 16px;
+            --nav-bg: #f5f9ed;
         }
-        .scan-line {
-            height: 2px;
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 375px;
+            height: 812px;
+            background-color: var(--bg-color);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Controle de Telas */
+        .view-section {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 90px;
+        }
+
+        .view-section.active { display: block; }
+
+        .header { text-align: center; padding: 20px 0; }
+        .header h1 { font-size: 22px; color: var(--text-main); }
+
+        /* Menu Principal */
+        .menu-options { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .option-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option-card:hover { border-color: var(--primary-color); }
+        .option-card i { font-size: 24px; color: var(--primary-color); width: 30px; }
+
+        /* Scanner */
+        #scanner-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 200;
+        }
+
+        #camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+        }
+
+        .scan-ui {
+            position: relative;
+            z-index: 210;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .qr-frame {
+            width: 260px;
+            height: 260px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 24px;
+            position: relative;
+            box-shadow: 0 0 0 2000px rgba(0,0,0,0.6);
+        }
+
+        .qr-frame::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
             background: #4ade80;
-            box-shadow: 0 0 8px #4ade80;
-            animation: scan 2s infinite linear;
+            box-shadow: 0 0 15px #4ade80;
+            animation: scanLine 2.5s infinite ease-in-out;
         }
-        @keyframes scan {
-            0% { top: 0%; }
-            100% { top: 100%; }
+
+        @keyframes scanLine {
+            0%, 100% { top: 5%; }
+            50% { top: 95%; }
         }
-        #video-container { transform: scaleX(-1); } /* Espelhar câmera frontal */
+
+        .scan-btn-container {
+            position: absolute;
+            bottom: 50px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .circle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Nav Inferior */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0; width: 100%; height: 80px;
+            background-color: var(--nav-bg);
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        .nav-item.active { color: var(--primary-color); font-weight: bold; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+
+        #file-input { display: none; }
     </style>
 </head>
-<body class="bg-zinc-900 flex justify-center items-center min-h-screen p-4">
+<body>
 
-    <div id="screen-menu" class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl text-center">
-        <div class="text-5xl mb-4">🍎</div>
-        <h1 class="text-3xl font-bold text-zinc-800 mb-2">Minha Despensa</h1>
-        <p class="text-zinc-500 mb-8">O que deseja fazer hoje?</p>
-
-        <div class="space-y-4">
-            <button onclick="openScanner()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
-                <span>📷</span> Escanear com a Câmera
-            </button>
-            
-            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
-                <span>📦</span> Ver Meu Estoque
-            </button>
-            
-            <div class="pt-4 border-t border-zinc-100">
-                <p class="text-xs text-zinc-400 mb-2 uppercase tracking-widest">Entrada Manual</p>
-                <input type="text" placeholder="Cole o código aqui..." class="w-full border-2 border-zinc-200 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all">
+<div class="app-container">
+    
+    <!-- TELA INICIAL -->
+    <section id="view-home" class="view-section active">
+        <header class="header">
+            <h1>Minha Despensa</h1>
+            <p>Selecione uma ação</p>
+        </header>
+        <div class="menu-options">
+            <div class="option-card" onclick="startCamera()">
+                <i class="fas fa-camera"></i>
+                <div><h3>Escanear Produto</h3><p>Câmera ou Arquivo</p></div>
+            </div>
+            <div class="option-card" onclick="changeTab('stock')">
+                <i class="fas fa-boxes-stacked"></i>
+                <div><h3>Ver Estoque</h3><p>Lista de produtos salvos</p></div>
+            </div>
+            <div class="option-card" onclick="changeTab('manual')">
+                <i class="fas fa-pen-to-square"></i>
+                <div><h3>Entrada Manual</h3><p>Digitar código ou nome</p></div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="screen-scanner" class="hidden fixed inset-0 bg-black flex flex-col">
-        <div class="absolute top-0 w-full p-6 flex justify-between items-center z-20 text-white">
-            <button onclick="closeScanner()" class="text-2xl p-2 bg-black/20 rounded-full">✕</button>
-            <h2 class="font-medium">Aponte para o código</h2>
-            <button class="text-2xl p-2 bg-black/20 rounded-full">⚡</button>
+    <!-- TELA ESTOQUE -->
+    <section id="view-stock" class="view-section">
+        <header class="header"><h1>Seu Estoque</h1></header>
+        <p style="text-align: center; color: #888; margin-top: 50px;">
+            <i class="fas fa-box-open" style="font-size: 40px; display: block; margin-bottom: 10px;"></i>
+            Nenhum item cadastrado ainda.
+        </p>
+    </section>
+
+    <!-- TELA MANUAL -->
+    <section id="view-manual" class="view-section">
+        <header class="header"><h1>Entrada Manual</h1></header>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="text" placeholder="Nome do produto" style="padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
+            <input type="number" placeholder="Código de barras" style="padding: 15px; border-radius: 10px; border: 1px solid #ddd;">
+            <button style="padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 10px; font-weight: bold;">ADICIONAR ITEM</button>
         </div>
+    </section>
 
-        <div class="relative flex-1 flex items-center justify-center overflow-hidden">
-            <video id="video" class="absolute min-w-full min-h-full object-cover" autoplay playsinline></video>
+    <!-- OVERLAY DO SCANNER (CÂMERA REAL) -->
+    <div id="scanner-overlay">
+        <video id="camera-feed" autoplay playsinline></video>
+        <div class="scan-ui">
+            <i class="fas fa-times" style="position: absolute; top: 30px; right: 30px; color: white; font-size: 25px;" onclick="stopCamera()"></i>
+            <div class="qr-frame"></div>
+            <p style="color: white; margin-top: 20px;">Aponte para o código</p>
             
-            <div class="z-10 w-64 h-64 relative">
-                <div class="scanner-frame absolute inset-0 rounded-3xl"></div>
-                <div class="scan-line absolute w-full z-20"></div>
-                
-                <div class="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-xl"></div>
-                <div class="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-xl"></div>
-                <div class="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-xl"></div>
-                <div class="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-xl"></div>
+            <div class="scan-btn-container">
+                <button class="circle-btn" onclick="triggerFile()"><i class="fas fa-image"></i></button>
+                <button class="circle-btn" id="flash-btn"><i class="fas fa-bolt"></i></button>
             </div>
         </div>
-
-        <div class="absolute bottom-10 w-full flex justify-center z-20">
-            <button onclick="manualInput()" class="bg-white/10 backdrop-blur-md text-white px-8 py-3 rounded-full border border-white/20 font-medium active:scale-95">
-                Inserir manualmente
-            </button>
-        </div>
+        <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
     </div>
 
-    <script>
-        const screenMenu = document.getElementById('screen-menu');
-        const screenScanner = document.getElementById('screen-scanner');
-        const video = document.getElementById('video');
-        let stream = null;
+    <!-- NAV INFERIOR -->
+    <nav class="bottom-nav">
+        <a href="javascript:void(0)" class="nav-item active" onclick="changeTab('home')"><i class="fas fa-home"></i>Início</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="changeTab('stock')"><i class="fas fa-list"></i>Estoque</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="changeTab('manual')"><i class="fas fa-plus"></i>Manual</a>
+        <a href="javascript:void(0)" class="nav-item"><i class="fas fa-user"></i>Perfil</a>
+    </nav>
+</div>
 
-        async function openScanner() {
-            screenMenu.classList.add('hidden');
-            screenScanner.classList.remove('hidden');
+<script>
+    let stream = null;
 
-            try {
-                // Tenta acessar a câmera traseira
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "environment" } 
-                });
-                video.srcObject = stream;
-            } catch (err) {
-                alert("Erro ao acessar a câmera: " + err.message);
-                closeScanner();
-            }
+    // Função para trocar de abas
+    function changeTab(tabName) {
+        // Remove active de tudo
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        // Ativa a tela correta
+        document.getElementById('view-' + tabName).classList.add('active');
+        
+        // Ativa o ícone da nav (baseado na ordem)
+        const navs = document.querySelectorAll('.nav-item');
+        if(tabName === 'home') navs[0].classList.add('active');
+        if(tabName === 'stock') navs[1].classList.add('active');
+        if(tabName === 'manual') navs[2].classList.add('active');
+    }
+
+    // Função para ligar a Câmera Real
+    async function startCamera() {
+        const overlay = document.getElementById('scanner-overlay');
+        const video = document.getElementById('camera-feed');
+        overlay.style.display = 'block';
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "environment" } 
+            });
+            video.srcObject = stream;
+        } catch (err) {
+            alert("Erro ao acessar a câmera: " + err);
+            overlay.style.display = 'none';
         }
+    }
 
-        function closeScanner() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            screenScanner.classList.add('hidden');
-            screenMenu.classList.remove('hidden');
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
         }
+        document.getElementById('scanner-overlay').style.display = 'none';
+    }
 
-        function manualInput() {
-            const code = prompt("Digite o código de barras:");
-            if(code) alert("Código inserido: " + code);
+    // Botão de Arquivo
+    function triggerFile() { document.getElementById('file-input').click(); }
+    
+    function handleFile(event) {
+        if(event.target.files[0]) {
+            alert("Arquivo recebido: " + event.target.files[0].name + "\nIniciando leitura de imagem...");
+            stopCamera();
         }
-    </script>
+    }
+
+    // Simulação de Flash
+    document.getElementById('flash-btn').addEventListener('click', function() {
+        this.style.background = this.style.background === 'orange' ? 'rgba(255,255,255,0.2)' : 'orange';
+    });
+</script>
+
 </body>
 </html>
