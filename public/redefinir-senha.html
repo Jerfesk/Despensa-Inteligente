@@ -184,7 +184,7 @@
             <a href="esqueci-senha.html" class="resend-link">Não recebeu o código? Enviar outro</a>
 
             <button class="btn" id="btnSalvar" onclick="salvarNovaSenha()">Atualizar Senha</button>
-            <button class="btn btn-cancelar" onclick="window.location.href='login.html'">Cancelar</button>
+            <button class="btn btn-cancelar" onclick="window.location.href='loginP.html'">Cancelar</button>
         </div>
     </div>
 
@@ -219,7 +219,7 @@
                     msgStatus.style.color = "green";
                     msgStatus.innerText = "✅ Senha alterada com sucesso!";
                     setTimeout(() => {
-                        window.location.href = 'login.html';
+                        window.location.href = 'loginP.html';
                     }, 2500);
                 } else {
                     msgStatus.style.color = "red";
