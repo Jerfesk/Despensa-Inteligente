@@ -335,6 +335,48 @@
         } catch (e) { conteudo.innerHTML = "Erro na conexão com a IA."; }
     }
 
+    // FUNÇÃO PARA GERAR RECEITA COM MÚLTIPLOS ITENS SELECIONADOS
+async function gerarReceitaMultipla() {
+    // 1. Pega todos os checkboxes marcados
+    const selecionados = document.querySelectorAll('#corpo-tabela input[type="checkbox"]:checked');
+    
+    // 2. Extrai o nome dos produtos a partir da linha (td) da tabela
+    const nomesProdutos = Array.from(selecionados).map(cb => {
+        const linha = cb.closest('tr');
+        return linha.querySelector('.col-nome b').innerText;
+    }).join(", ");
+
+    if (!nomesProdutos) return alert("Selecione ao menos 2 produtos!");
+
+    // 3. Reutiliza a lógica do modal e da rota que você já tem
+    const modal = document.getElementById('modal-receita');
+    const conteudo = document.getElementById('conteudo-receita');
+    
+    modal.style.display = 'flex';
+    conteudo.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <iconify-icon icon="lucide:loader-2" style="animation:spin 1s linear infinite; font-size:30px; color:var(--primary);"></iconify-icon>
+            <br><br>Criando receita especial com:<br><b>${nomesProdutos}</b>...
+        </div>`;
+
+    try {
+        // Envia a lista de produtos para a mesma rota /receita/:produto
+        const response = await fetch(`/receita/${encodeURIComponent(nomesProdutos)}`, { 
+            headers: getAuthHeaders() 
+        });
+        
+        const receita = await response.json();
+        
+        let html = `<h3 style="color:#4f46e5; border-bottom:1px solid #eee; padding-bottom:8px;">🍽️ ${receita.nome}</h3>`;
+        html += `<h4 style="margin-top:15px; font-size:14px;">🛒 Ingredientes:</h4><ul style="font-size:12px; margin-left:15px; color:#444;">` + receita.ingredientes.map(i => `<li>${i}</li>`).join('') + `</ul>`;
+        html += `<h4 style="margin-top:15px; font-size:14px;">👨‍🍳 Preparo:</h4><ol style="font-size:12px; margin-left:15px; color:#444;">` + receita.preparo.map(p => `<li style="margin-bottom:5px;">${p}</li>`).join('') + `</ol>`;
+        
+        conteudo.innerHTML = html;
+    } catch (e) {
+        conteudo.innerHTML = "Erro na conexão com a IA.";
+    }
+}
+
     window.onload = carregarEstoque;
 </script>
 
