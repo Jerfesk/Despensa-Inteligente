@@ -221,26 +221,8 @@
     </div>
   </div>
 
-  <div class="absolute bottom-0 left-0 w-full h-[100px] bg-white border-t border-[#ECECEC] nav-shadow flex justify-around items-center pb-3 rounded-t-[28px]">
-    <button class="nav-btn flex flex-col items-center text-[#7B7B7B]" data-nav="Despensa">
-      <iconify-icon icon="lucide:home" class="text-[26px]"></iconify-icon>
-      <span class="text-[13px] mt-1">Despensa</span>
-    </button>
+  
 
-    <button class="nav-btn flex flex-col items-center text-[#7B7B7B]" data-nav="Alertas">
-      <iconify-icon icon="lucide:bell" class="text-[26px]"></iconify-icon>
-      <span class="text-[13px] mt-1">Alertas</span>
-    </button>
-
-    <button class="nav-btn flex flex-col items-center text-[#7B7B7B]" data-nav="Receitas">
-      <iconify-icon icon="lucide:utensils" class="text-[26px]"></iconify-icon>
-      <span class="text-[13px] mt-1">Receitas</span>
-    </button>
-
-    <button class="nav-btn flex flex-col items-center text-[#2F7D32]" data-nav="Perfil">
-      <iconify-icon icon="lucide:user" class="text-[26px]"></iconify-icon>
-      <span class="text-[13px] mt-1 font-semibold">Perfil</span>
-    </button>
   </div>
 </div>
 
@@ -249,7 +231,7 @@
 <script>
   // VOLTAR
   document.getElementById('backBtn').addEventListener('click', () => {
-    alert('Voltando...');
+    window.location.href = 'estoque.html';
   });
 
   // FOTO
