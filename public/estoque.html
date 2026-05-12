@@ -163,10 +163,10 @@
             <span>Estoque</span>
         </div>
         
-        <div class="nav-item">
+        <a href="perfilT.html" class="nav-item">
             <iconify-icon icon="lucide:user"></iconify-icon>
             <span>Perfil</span>
-        </div>
+        </a>
     </nav>
 </div>
 
@@ -263,6 +263,84 @@
                 `;
                 corpo.appendChild(tr);
             });
+        } catch (error) { console.error("Erro:", error); }
+    }
+
+    async function carregarEstoque() {
+        try {
+            const response = await fetch('/api/estoque', { headers: getAuthHeaders() });
+            if (!response.ok) { window.location.href = 'login.html'; return; }
+
+            const estoque = await response.json();
+            const corpo = document.getElementById('corpo-tabela');
+            corpo.innerHTML = '';
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            // Variáveis para guardar o que está crítico
+            let itensVencidos = [];
+            let itensProximos = [];
+
+            estoque.forEach(prod => {
+                let classeAlerta = "";
+                let statusTexto = "";
+
+                if (prod.validade) {
+                    const [ano, mes, dia] = prod.validade.split('-');
+                    const dataVal = new Date(ano, mes - 1, dia);
+                    const diffDias = Math.ceil((dataVal - hoje) / (1000 * 3600 * 24));
+
+                    if (diffDias < 0) { 
+                        classeAlerta = "expired"; 
+                        statusTexto = "Venc.";
+                        itensVencidos.push(prod.nome); // Adiciona na lista de alerta
+                    }
+                    else if (diffDias <= 7) { 
+                        classeAlerta = "warning"; 
+                        statusTexto = `${diffDias}d`; 
+                        itensProximos.push(`${prod.nome} (${diffDias}d)`); // Adiciona na lista de alerta
+                    }
+                    else { statusTexto = `${diffDias}d`; }
+                }
+
+                // ... (mantenha o código de criação da linha TR igual ao que você já tem) ...
+                const tr = document.createElement('tr');
+                tr.className = `stock-item ${classeAlerta}`;
+                tr.innerHTML = `
+                    <td class="col-check"><input type="checkbox" onchange="atualizarBotaoMassa()"></td>
+                    <td class="col-nome"><b>${prod.nome}</b></td>
+                    <td class="col-qtd"><span class="qty-badge">${prod.quantidade}</span></td>
+                    <td class="col-val" style="font-size: 10px; line-height: 1.1;">
+                        ${prod.validade ? prod.validade.split('-').reverse().slice(0,2).join('/') : '--'}<br>
+                        <small style="opacity: 0.8">${statusTexto}</small>
+                    </td>
+                    <td class="col-actions">
+                        <div class="actions">
+                            <button class="btn-action btn-recipe" onclick="gerarReceita('${prod.nome}')">Receita</button>
+                            <button class="btn-action btn-edit" onclick="abrirEdicao(${prod.id}, '${prod.nome.replace(/'/g, "\\'")}', ${prod.quantidade}, '${prod.validade}')">
+                                <iconify-icon icon="lucide:pencil"></iconify-icon>
+                            </button>
+                            <button class="btn-action btn-delete" onclick="deletarItem(${prod.id})">
+                                <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                corpo.appendChild(tr);
+            });
+
+            // --- FUNÇÃO DE ALERTA ATIVADA AQUI ---
+            if (itensVencidos.length > 0 || itensProximos.length > 0) {
+                let mensagem = "";
+                if (itensVencidos.length > 0) {
+                    mensagem += `⚠️ PRODUTOS VENCIDOS:\n• ${itensVencidos.join('\n• ')}\n\n`;
+                }
+                if (itensProximos.length > 0) {
+                    mensagem += `🕒 VENCENDO EM BREVE (7 dias):\n• ${itensProximos.join('\n• ')}`;
+                }
+                alert(mensagem);
+            }
+
         } catch (error) { console.error("Erro:", error); }
     }
 
