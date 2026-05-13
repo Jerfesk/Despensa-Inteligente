@@ -1,22 +1,22 @@
-#1. Apresentação do grupo
+# 1. Apresentação do Grupo
 
-Contido em README.md
+Contido em [README.md](README.md)
 
-#2. PADRÕES DE PROJETO (GoF)
+---
 
-2.1 Singleton
+# 2. PADRÕES DE PROJETO (GoF)
 
-§	Categoria
-Criacional
+## 2.1 Singleton
 
-§	Problema resolvido
-Garantir uma única instância do banco de dados durante a execução do sistema.
+| Propriedade | Descrição |
+|---|---|
+| **Categoria** | Criacional |
+| **Problema Resolvido** | Garantir uma única instância do banco de dados durante a execução do sistema |
+| **Aplicação no Projeto** | O SQLite é inicializado apenas uma vez e reutilizado em todas as rotas da aplicação |
 
-§	Aplicação no projeto
-O SQLite é inicializado apenas uma vez e reutilizado em todas as rotas da aplicação.
+### Diagrama UML
 
-§	UML
-
+```
 +----------------------+
 | Database             |
 +----------------------+
@@ -24,38 +24,44 @@ O SQLite é inicializado apenas uma vez e reutilizado em todas as rotas da aplic
 +----------------------+
 | + getInstance()      |
 +----------------------+
+```
 
-§	Código do projeto
+### Código do Projeto
+
+```javascript
 const db = new sqlite3.Database('./estoque.db', (err) => {
     if (err) console.error(err.message);
 });
+```
 
+### Justificativa
 
-§	Justificativa
 A conexão com o banco é compartilhada globalmente no sistema, evitando múltiplas conexões desnecessárias.
 
-2.2 Middleware (Chain of Responsibility)
+---
 
-§	Categoria
-Comportamental
+## 2.2 Middleware (Chain of Responsibility)
 
-§	Problema resolvido
-Permitir processamento em cadeia antes da execução da rota principal.
+| Propriedade | Descrição |
+|---|---|
+| **Categoria** | Comportamental |
+| **Problema Resolvido** | Permitir processamento em cadeia antes da execução da rota principal |
+| **Aplicação no Projeto** | O middleware `autenticarToken` intercepta requisições protegidas verificando autenticação JWT |
 
-§	Aplicação no projeto
-O middleware autenticarToken intercepta requisições protegidas verificando autenticação JWT.
+### Diagrama UML
 
-§	UML
-
+```
 Requisição
-       ▼
+     ↓
 Middleware JWT
-       ▼
+     ↓
 Endpoint Protegido
+```
 
-§	Código do projeto
+### Código do Projeto
+
+```javascript
 const autenticarToken = (req, res, next) => {
-
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -63,7 +69,6 @@ const autenticarToken = (req, res, next) => {
         return res.status(401).json({ erro: "Acesso negado" });
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
-
         if (err)
             return res.status(403).json({ erro: "Token inválido" });
 
@@ -71,125 +76,171 @@ const autenticarToken = (req, res, next) => {
         next();
     });
 };
+```
 
-§	Justificativa
+### Justificativa
+
 O middleware funciona como uma cadeia de validação antes de permitir acesso às rotas protegidas.
 
-2.3 Adapter
+---
 
-§	Categoria
-Estrutural
+## 2.3 Adapter
 
-§	Problema resolvido
-Adaptar APIs externas ao formato interno da aplicação.
+| Propriedade | Descrição |
+|---|---|
+| **Categoria** | Estrutural |
+| **Problema Resolvido** | Adaptar APIs externas ao formato interno da aplicação |
+| **Aplicação no Projeto** | A API do OpenFoodFacts retorna diversos dados, mas o sistema adapta apenas as informações necessárias |
 
-§	Aplicação no projeto
-A API do OpenFoodFacts retorna diversos dados, mas o sistema adapta apenas as informações necessárias.
+### Diagrama UML
 
-§	UML
+```
 Sistema ---> Adapter ---> OpenFoodFacts API
+```
 
-§	Código do projeto
-const nomeProduto =
-response.data.product.product_name_pt
-|| response.data.product.product_name;
+### Código do Projeto
+
+```javascript
+const nomeProduto = 
+    response.data.product.product_name_pt || 
+    response.data.product.product_name;
 
 res.json({
     encontrado: true,
     nome: nomeProduto
 });
+```
 
-§	Justificativa
+### Justificativa
+
 O sistema converte os dados externos em um formato simples utilizado pela aplicação.
 
-#3. DOCUMENTAÇÃO DE APIs
+---
 
-3.1 Tecnologias utilizadas
-•	Backend: Express.js 
-•	Banco de dados: SQLite 
-•	Autenticação: JWT.io 
+# 3. DOCUMENTAÇÃO DE APIs
 
-3.2 Endpoints documentados
+## 3.1 Tecnologias Utilizadas
 
-Método	            Endpoint	            Função
-POST	      /api/auth/registrar	        Cadastro
-POST	      /api/auth/login	            Login
-POST	      /api/auth/esqueci-senha	    Recuperação
-POST	      /api/auth/redefinir-senha	  Nova senha
-GET	        /api/produto/:codigo	      Buscar produto
-GET	        /api/estoque	              Listar estoque
-POST	      /api/estoque	              Adicionar produto
-PUT	        /api/estoque/:id	          Atualizar produto
-DELETE	    /api/estoque/:id	          Remover produto
-GET	        /receita/:produto	          Receita IA
-GET	        /api/sugestoes	            Sugestões IA
-GET	        /api/usuario/meu-perfil	    Perfil
+- **Backend:** Express.js
+- **Banco de Dados:** SQLite
+- **Autenticação:** JWT.io
 
-3.3 Exemplo de documentação
+## 3.2 Endpoints Documentados
 
-Login
+| Método | Endpoint | Função |
+|--------|----------|--------|
+| POST | `/api/auth/registrar` | Cadastro |
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/esqueci-senha` | Recuperação de Senha |
+| POST | `/api/auth/redefinir-senha` | Nova Senha |
+| GET | `/api/produto/:codigo` | Buscar Produto |
+| GET | `/api/estoque` | Listar Estoque |
+| POST | `/api/estoque` | Adicionar Produto |
+| PUT | `/api/estoque/:id` | Atualizar Produto |
+| DELETE | `/api/estoque/:id` | Remover Produto |
+| GET | `/receita/:produto` | Gerar Receita (IA) |
+| GET | `/api/sugestoes` | Sugestões (IA) |
+| GET | `/api/usuario/meu-perfil` | Perfil do Usuário |
 
-§	Endpoint
+## 3.3 Exemplo: Endpoint de Login
+
+### Endpoint
+```http
 POST /api/auth/login
+```
 
-§	Request
+### Request
+```json
 {
   "email": "usuario@email.com",
   "senha": "123456"
 }
+```
 
-§	Response
+### Response (Sucesso)
+```json
 {
   "sucesso": true,
-  "token": "jwt_token"
+  "token": "jwt_token_aqui"
 }
+```
 
-§	Status HTTP
-Código	Descrição
-200	Login realizado
-401	Usuário inválido
-500	Erro interno
+### Status HTTP
 
-3.4 Exemplo Swagger/OpenAPI
+| Código | Descrição |
+|--------|-----------|
+| 200 | Login realizado com sucesso |
+| 401 | Usuário ou senha inválidos |
+| 500 | Erro interno do servidor |
 
-A documentação da API foi desenvolvida utilizando o padrão OpenAPI/Swagger, permitindo testes e visualização dos endpoints da aplicação.
+## 3.4 Documentação Swagger/OpenAPI
 
-Bibliotecas recomendadas
-•	Swagger UI Express 
-•	Swagger JSDoc
+A documentação da API foi desenvolvida utilizando o padrão **OpenAPI/Swagger**, permitindo testes e visualização interativa dos endpoints da aplicação.
 
-#4. INTELIGÊNCIA ARTIFICIAL NA APLICAÇÃO
+### Bibliotecas Recomendadas
 
-4.1 Objetivo da IA
-A Inteligência Artificial foi utilizada para gerar receitas culinárias automaticamente com base nos produtos cadastrados no estoque da aplicação.
-O objetivo é auxiliar o usuário no aproveitamento de alimentos disponíveis na despensa.
+- `swagger-ui-express`
+- `swagger-jsdoc`
 
-4.2 Ferramenta utilizada
-Foi utilizada a API da Groq utilizando o modelo Llama 3.3.
+---
 
-§	Justificativa
-A ferramenta foi escolhida devido:
-•	alta velocidade de resposta 
-•	compatibilidade com API OpenAI 
-•	facilidade de integração com Node.js 
-•	baixo custo operacional
+# 4. INTELIGÊNCIA ARTIFICIAL NA APLICAÇÃO
 
-4.3 Funcionamento da IA
-Fluxo da funcionalidade:
-Usuário -> Sistema -> API IA -> Receita -> Usuário
-1.	Usuário informa ingrediente 
-2.	Sistema envia prompt para IA 
-3.	IA gera receita em JSON 
-4.	Sistema retorna resultado formatado
+## 4.1 Objetivo da IA
 
-4.4 Prova de Conceito (PoC)
-§	Endpoint utilizado
+A Inteligência Artificial foi utilizada para **gerar receitas culinárias automaticamente** com base nos produtos cadastrados no estoque da aplicação. O objetivo é auxiliar o usuário no aproveitamento de alimentos disponíveis na despensa.
+
+## 4.2 Ferramenta Utilizada
+
+**API da Groq** utilizando o modelo **Llama 3.3**
+
+### Justificativa da Escolha
+
+- ✅ Alta velocidade de resposta
+- ✅ Compatibilidade com API OpenAI
+- ✅ Fácil integração com Node.js
+- ✅ Baixo custo operacional
+
+## 4.3 Funcionamento da IA
+
+### Fluxo da Funcionalidade
+
+```
+Usuário 
+   ↓
+Sistema 
+   ↓
+API IA (Groq/Llama) 
+   ↓
+Receita (JSON) 
+   ↓
+Usuário
+```
+
+### Passo a Passo
+
+1. Usuário informa ingrediente desejado
+2. Sistema envia prompt para API IA
+3. IA gera receita em formato JSON
+4. Sistema retorna resultado formatado
+
+## 4.4 Prova de Conceito (PoC)
+
+### Endpoint
+
+```http
 GET /receita/:produto
+```
 
-§	Exemplo de requisição:
+### Exemplo de Requisição
+
+```http
 GET /receita/arroz
+```
 
-§	Resposta da IA
+### Resposta da IA
+
+```json
 {
   "nome": "Arroz Temperado",
   "ingredientes": [
@@ -203,18 +254,24 @@ GET /receita/arroz
     "Cozinhe por 20 minutos"
   ]
 }
+```
 
-§	Código da integração IA
+### Código da Integração IA
+
+```javascript
 const resposta = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     messages: [
         {
             role: "user",
-            content: "Crie uma receita simples"
+            content: "Crie uma receita simples com os ingredientes fornecidos"
         }
     ]
 });
+```
 
-#5. CHECKPOINT 2 — ESTADO ATUAL DO PROJETO
+---
 
-Demonstrado
+# 5. CHECKPOINT 2 — ESTADO ATUAL DO PROJETO
+
+✅ **Demonstrado**
