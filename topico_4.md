@@ -1,4 +1,7 @@
-2. PADRÕES DE PROJETO (GoF)
+1. Apresentação do grupo
+   Contido em README.md
+
+3. PADRÕES DE PROJETO (GoF)
 2.1 Singleton
 	Categoria
 Criacional
@@ -203,3 +206,6 @@ const resposta = await groq.chat.completions.create({
         }
     ]
 });
+
+5. CHECKPOINT 2 — ESTADO ATUAL DO PROJETO
+Demonstrado
