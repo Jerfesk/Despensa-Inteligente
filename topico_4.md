@@ -1,4 +1,4 @@
-1. Apresentação do grupo
+*1. Apresentação do grupo
 
 Contido em README.md
 
