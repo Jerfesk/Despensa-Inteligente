@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ajuda e Suporte</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+  <style>
+    body { background: #EEF3E8; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .phone { width: 390px; height: 844px; background: #FCFDFB; border-radius: 36px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; }
+    .card-shadow { box-shadow: 0 4px 14px rgba(0,0,0,0.04); }
+  </style>
+</head>
+<body>
+
+<div class="phone flex flex-column flex-col">
+  <div class="flex items-center px-6 pt-14 pb-6">
+    <button onclick="window.location.href='perfilT.html'" class="w-10 h-10 flex items-center justify-center text-[#1A461A]">
+      <iconify-icon icon="lucide:arrow-left" class="text-[24px]"></iconify-icon>
+    </button>
+    <h1 class="text-[22px] font-bold text-[#1A461A] ml-4">Ajuda e Suporte</h1>
+  </div>
+
+  <div class="px-6 space-y-6">
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-[#F0F4ED] rounded-full flex items-center justify-center mx-auto mb-4">
+        <iconify-icon icon="lucide:headphones" class="text-[40px] text-[#2F7D32]"></iconify-icon>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800">Como podemos ajudar?</h2>
+      <p class="text-gray-500 text-sm">Nossa equipe está disponível para tirar suas dúvidas.</p>
+    </div>
+
+    <a href="https://wa.me/5511999999999?text=Olá! Preciso de ajuda com o app Minha Despensa." target="_blank" 
+       class="flex items-center p-5 bg-white border border-[#EAEFE5] rounded-[24px] card-shadow hover:bg-gray-50 transition">
+      <div class="w-12 h-12 bg-[#E8F5E9] rounded-full flex items-center justify-center mr-4">
+        <iconify-icon icon="logos:whatsapp-icon" class="text-[24px]"></iconify-icon>
+      </div>
+      <div class="flex-1">
+        <h3 class="font-bold text-gray-800">WhatsApp</h3>
+        <p class="text-xs text-gray-500">Conversar agora</p>
+      </div>
+      <iconify-icon icon="lucide:chevron-right" class="text-gray-400"></iconify-icon>
+    </a>
+
+    <a href="tel:+5511999999999" 
+       class="flex items-center p-5 bg-white border border-[#EAEFE5] rounded-[24px] card-shadow hover:bg-gray-50 transition">
+      <div class="w-12 h-12 bg-[#F0F4ED] rounded-full flex items-center justify-center mr-4">
+        <iconify-icon icon="lucide:phone" class="text-[24px] text-[#2F7D32]"></iconify-icon>
+      </div>
+      <div class="flex-1">
+        <h3 class="font-bold text-gray-800">Telefone</h3>
+        <p class="text-xs text-gray-500">(11) 99999-9999</p>
+      </div>
+      <iconify-icon icon="lucide:chevron-right" class="text-gray-400"></iconify-icon>
+    </a>
+
+    <a href="mailto:suporte@despensa.com" 
+       class="flex items-center p-5 bg-white border border-[#EAEFE5] rounded-[24px] card-shadow hover:bg-gray-50 transition">
+      <div class="w-12 h-12 bg-[#F0F4ED] rounded-full flex items-center justify-center mr-4">
+        <iconify-icon icon="lucide:mail" class="text-[24px] text-[#2F7D32]"></iconify-icon>
+      </div>
+      <div class="flex-1">
+        <h3 class="font-bold text-gray-800">E-mail Institucional</h3>
+        <p class="text-xs text-gray-500">suporte@uni9.edu.br</p>
+      </div>
+      <iconify-icon icon="lucide:chevron-right" class="text-gray-400"></iconify-icon>
+    </a>
+
+  </div>
+
+  <div class="absolute bottom-10 w-full text-center px-8">
+    <p class="text-[12px] text-gray-400 font-medium uppercase tracking-widest">Atendimento de Seg à Sex, das 9h às 18h</p>
+  </div>
+</div>
+
+</body>
+</html>
