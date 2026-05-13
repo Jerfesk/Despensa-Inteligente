@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastrar Novo Usuário</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #EEF3E8; font-family: Inter, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .phone { width: 390px; height: 844px; background: #FCFDFB; border-radius: 36px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow-y: auto; }
+    input:focus { border-color: #2F7D32; outline: none; }
+  </style>
+</head>
+<body>
+
+<div class="phone p-8">
+  <div class="flex items-center mb-8">
+    <button onclick="window.location.href='perfilT.html'" class="text-[#1A461A] text-2xl">
+      <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+    </button>
+    <h1 class="text-2xl font-bold text-[#1A461A] ml-4">Novo Usuário</h1>
+  </div>
+
+  <div class="space-y-5">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+      <input type="text" id="nome" placeholder="Ex: Jefferson Gomes" class="w-full p-4 bg-[#F0F4ED] border border-[#EAEFE5] rounded-2xl">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+      <input type="email" id="email" placeholder="usuario@email.com" class="w-full p-4 bg-[#F0F4ED] border border-[#EAEFE5] rounded-2xl">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+      <input type="date" id="data_nascimento" class="w-full p-4 bg-[#F0F4ED] border border-[#EAEFE5] rounded-2xl">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+      <input type="password" id="senha" placeholder="••••••••" class="w-full p-4 bg-[#F0F4ED] border border-[#EAEFE5] rounded-2xl">
+    </div>
+
+    <button onclick="cadastrar()" class="w-full py-4 bg-[#2F7D32] text-white rounded-2xl font-bold text-lg mt-4 shadow-lg active:scale-95 transition">
+      Criar Conta
+    </button>
+  </div>
+</div>
+
+<script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+<script>
+  async function cadastrar() {
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+    const data_nascimento = document.getElementById('data_nascimento').value;
+
+    if(!nome || !email || !senha || !data_nascimento) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/registrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha, data_nascimento })
+      });
+
+      const data = await res.json();
+      if(data.sucesso) {
+        alert("Usuário cadastrado com sucesso!");
+        window.location.href = 'perfilT.html';
+      } else {
+        alert("Erro: " + data.erro);
+      }
+    } catch (err) {
+      alert("Erro ao conectar com o servidor.");
+    }
+  }
+</script>
+</body>
+</html>

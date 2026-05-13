@@ -42,227 +42,159 @@
     .card-shadow {
       box-shadow: 0 2px 16px rgba(0,0,0,0.03);
     }
-
-    .nav-shadow {
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
-    }
   </style>
 </head>
 
 <body>
 
 <div class="phone">
-
   <div class="scroll-area">
 
     <div class="flex items-center justify-between px-6 pt-14 pb-6">
-      <button
-        id="backBtn"
-        class="w-10 h-10 flex items-center justify-center text-[#1A461A]"
-      >
-        <iconify-icon
-          icon="lucide:arrow-left"
-          class="text-[24px]"
-        ></iconify-icon>
+      <button id="backBtn" class="w-10 h-10 flex items-center justify-center text-[#1A461A]">
+        <iconify-icon icon="lucide:arrow-left" class="text-[24px]"></iconify-icon>
       </button>
 
-      <h1 class="text-[22px] font-bold text-[#1A461A]">
-        Meu Perfil
-      </h1>
-
+      <h1 class="text-[22px] font-bold text-[#1A461A]">Meu Perfil</h1>
       <div class="w-10"></div>
     </div>
 
     <div class="px-5">
-
       <div class="bg-white rounded-[28px] p-8 border border-[#EAEFE5] card-shadow">
         <div class="relative w-fit mx-auto mb-5">
-          
-          <div class="w-28 h-28 rounded-full bg-[#F0F4ED] border-4 border-white shadow flex items-center justify-center">
-            <iconify-icon 
-              icon="lucide:chef-hat" 
-              class="text-[50px] text-[#2F7D32]"
-            ></iconify-icon>
+          <div class="w-28 h-28 rounded-full bg-[#F0F4ED] border-4 border-white shadow flex items-center justify-center overflow-hidden">
+            <iconify-icon icon="lucide:chef-hat" class="text-[50px] text-[#2F7D32]"></iconify-icon>
           </div>
 
-          <button
-            id="photoBtn"
-            class="absolute bottom-1 right-1 w-10 h-10 rounded-full bg-[#2F7D32] border-4 border-white flex items-center justify-center text-white shadow"
-          >
-            <iconify-icon
-              icon="lucide:camera"
-              class="text-[18px]"
-            ></iconify-icon>
+          <button id="photoBtn" class="absolute bottom-1 right-1 w-10 h-10 rounded-full bg-[#2F7D32] border-4 border-white flex items-center justify-center text-white shadow">
+            <iconify-icon icon="lucide:camera" class="text-[18px]"></iconify-icon>
           </button>
         </div>
 
         <div class="text-center">
-          <h2 class="text-[20px] font-bold text-black mb-1">
-            Jefferson Gomes
-          </h2>
-          <p class="text-[16px] text-[#3D6D3E]">
-            jefferson.g@uni9.edu.br
-          </p>
+          <h2 id="userName" class="text-[20px] font-bold text-black mb-1">Carregando...</h2>
+          <p id="userEmail" class="text-[16px] text-[#3D6D3E]">carregando@email.com</p>
         </div>
       </div>
 
       <div class="bg-white rounded-[28px] overflow-hidden mt-6 border border-[#EAEFE5] card-shadow">
-
-        <button
-          class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition"
-          data-action="Adicionar Usuário"
-        >
+        
+        <button class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition" data-action="Adicionar Usuário">
           <div class="flex items-center gap-4">
-            <iconify-icon
-              icon="lucide:user-plus"
-              class="text-[22px] text-[#2F7D32]"
-            ></iconify-icon>
-            <span class="text-[18px] text-black">
-              Adicionar Usuário
-            </span>
+            <iconify-icon icon="lucide:user-plus" class="text-[22px] text-[#2F7D32]"></iconify-icon>
+            <span class="text-[18px] text-black">Adicionar Usuário</span>
           </div>
-          <iconify-icon
-            icon="lucide:chevron-right"
-            class="text-[20px] text-[#A1A1AA]"
-          ></iconify-icon>
+          <iconify-icon icon="lucide:chevron-right" class="text-[20px] text-[#A1A1AA]"></iconify-icon>
         </button>
 
-        <button
-          class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition"
-          data-action="Preferências"
-        >
+        <button class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition" data-action="Preferências">
           <div class="flex items-center gap-4">
-            <iconify-icon
-              icon="lucide:settings"
-              class="text-[22px] text-[#555]"
-            ></iconify-icon>
-            <span class="text-[18px] text-black">
-              Preferências
-            </span>
+            <iconify-icon icon="lucide:settings" class="text-[22px] text-[#555]"></iconify-icon>
+            <span class="text-[18px] text-black">Preferências</span>
           </div>
-          <iconify-icon
-            icon="lucide:chevron-right"
-            class="text-[20px] text-[#A1A1AA]"
-          ></iconify-icon>
+          <iconify-icon icon="lucide:chevron-right" class="text-[20px] text-[#A1A1AA]"></iconify-icon>
         </button>
 
-        <button
-          class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition"
-          data-action="Minha Conta"
-        >
+        <button class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition" data-action="Minha Conta">
           <div class="flex items-center gap-4">
-            <iconify-icon
-              icon="lucide:user"
-              class="text-[22px] text-[#555]"
-            ></iconify-icon>
-            <span class="text-[18px] text-black">
-              Minha Conta
-            </span>
+            <iconify-icon icon="lucide:user" class="text-[22px] text-[#555]"></iconify-icon>
+            <span class="text-[18px] text-black">Minha Conta</span>
           </div>
-          <iconify-icon
-            icon="lucide:chevron-right"
-            class="text-[20px] text-[#A1A1AA]"
-          ></iconify-icon>
+          <iconify-icon icon="lucide:chevron-right" class="text-[20px] text-[#A1A1AA]"></iconify-icon>
         </button>
 
-        <button
-          class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition"
-          data-action="Ajuda e Suporte"
-        >
+        <button class="menu-btn w-full h-[82px] flex items-center justify-between px-6 border-b border-[#EEF2EB] hover:bg-[#FAFAFA] transition" data-action="Ajuda e Suporte">
           <div class="flex items-center gap-4">
-            <iconify-icon
-              icon="lucide:help-circle"
-              class="text-[22px] text-[#DB4437]"
-            ></iconify-icon>
-            <span class="text-[18px] text-black">
-              Ajuda e Suporte
-            </span>
+            <iconify-icon icon="lucide:help-circle" class="text-[22px] text-[#DB4437]"></iconify-icon>
+            <span class="text-[18px] text-black">Ajuda e Suporte</span>
           </div>
-          <iconify-icon
-            icon="lucide:chevron-right"
-            class="text-[20px] text-[#A1A1AA]"
-          ></iconify-icon>
-        </button>
-
-        <button
-          class="menu-btn w-full h-[82px] flex items-center justify-between px-6 hover:bg-[#FAFAFA] transition"
-          data-action="Sobre o App"
-        >
-          <div class="flex items-center gap-4">
-            <iconify-icon
-              icon="lucide:info"
-              class="text-[22px] text-[#1A73E8]"
-            ></iconify-icon>
-            <span class="text-[18px] text-black">
-              Sobre o App
-            </span>
-          </div>
-          <iconify-icon
-            icon="lucide:chevron-right"
-            class="text-[20px] text-[#A1A1AA]"
-          ></iconify-icon>
+          <iconify-icon icon="lucide:chevron-right" class="text-[20px] text-[#A1A1AA]"></iconify-icon>
         </button>
 
       </div>
 
       <div class="mt-8 mb-8">
-        <button
-          id="logoutBtn"
-          class="w-full h-[68px] rounded-[24px] border-2 border-[#2F7D32] bg-white text-[#2F7D32] text-[22px] font-semibold flex items-center justify-center gap-3 hover:bg-[#F8FBF5] transition"
-        >
-          <iconify-icon
-            icon="lucide:log-out"
-            class="text-[24px]"
-          ></iconify-icon>
+        <button id="logoutBtn" class="w-full h-[68px] rounded-[24px] border-2 border-[#2F7D32] bg-white text-[#2F7D32] text-[22px] font-semibold flex items-center justify-center gap-3 hover:bg-[#F8FBF5] transition">
+          <iconify-icon icon="lucide:log-out" class="text-[24px]"></iconify-icon>
           Sair da conta
         </button>
       </div>
 
     </div>
   </div>
-
-  
-
-  </div>
 </div>
 
 <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
 <script>
+  // --- CARREGAR DADOS AO INICIAR ---
+  async function carregarPerfil() {
+    const token = localStorage.getItem('token');
+    
+    // Se não houver token, redireciona para login
+    if (!token) {
+      window.location.href = 'loginP.html';
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/usuario/meu-perfil', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const dados = await response.json();
+        // Se o nome no banco estiver vazio (NULL), usa o e-mail como fallback
+        document.getElementById('userName').innerText = dados.nome || dados.email.split('@')[0];
+        document.getElementById('userEmail').innerText = dados.email;
+      } else {
+        // Se o token for inválido, limpa e desloga
+        localStorage.removeItem('token');
+        window.location.href = 'loginP.html';
+      }
+    } catch (error) {
+      console.error("Erro ao carregar perfil:", error);
+    }
+  }
+
+  // Executa o carregamento assim que a página abre
+  window.onload = carregarPerfil;
+
   // VOLTAR
   document.getElementById('backBtn').addEventListener('click', () => {
     window.location.href = 'estoque.html';
   });
 
-  // FOTO
-  document.getElementById('photoBtn').addEventListener('click', () => {
-    alert('Abrindo galeria para alterar foto...');
-  });
-
-  // MENU (Trata todos os botões da lista)
+  // MENU (Redirecionamento para cadastroUsuario.html)
   const menuButtons = document.querySelectorAll('.menu-btn');
   menuButtons.forEach(button => {
     button.addEventListener('click', () => {
       const action = button.dataset.action;
-      alert(`Abrindo ${action}...`);
+      
+      if(action === "Adicionar Usuário") {
+        window.location.href = 'cadastroUsuario.html';
+      } else {
+        alert(`Abrindo ${action}...`);
+      }
     });
   });
 
-  // LOGOUT
+  // LOGOUT REAL
   document.getElementById('logoutBtn').addEventListener('click', () => {
     const confirmLogout = confirm('Deseja sair da conta?');
     if(confirmLogout) {
-      alert('Logout realizado!');
+      localStorage.removeItem('token'); // LIMPA O TOKEN DO NAVEGADOR
+      window.location.href = 'loginP.html';
     }
   });
 
-  // NAVBAR
-  const navButtons = document.querySelectorAll('.nav-btn');
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const page = button.dataset.nav;
-      alert(`Abrindo ${page}...`);
-    });
+  // FOTO
+  document.getElementById('photoBtn').addEventListener('click', () => {
+    alert('Abrindo galeria para alterar foto...');
   });
 </script>
 

@@ -39,10 +39,12 @@ const db = new sqlite3.Database('./estoque.db', (err) => {
         )`);
         // Tabela de Usuários
         db.run(`CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE,
-            senha TEXT,
-            resetToken TEXT
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT,
+                email TEXT UNIQUE,
+                senha TEXT,
+                data_nascimento TEXT,
+                resetToken TEXT
         )`);
     }
 });
@@ -65,13 +67,24 @@ const autenticarToken = (req, res, next) => {
 // --- ROTAS DE USUÁRIO (LOGIN/CADASTRO/RESET) ---
 
 // Rota para criar o primeiro usuário (ou novos)
+
 app.post('/api/auth/registrar', async (req, res) => {
-    const { email, senha } = req.body;
+    // Agora desestruturamos também o nome e a data de nascimento do corpo da requisição
+    const { nome, email, senha, data_nascimento } = req.body;
+
     try {
         const senhaHash = await bcrypt.hash(senha, 10);
-        db.run(`INSERT INTO usuarios (email, senha) VALUES (?, ?)`, [email, senhaHash], (err) => {
-            if (err) return res.status(400).json({ erro: "E-mail já cadastrado." });
-            res.json({ sucesso: true, mensagem: "Usuário criado!" });
+        
+        // Incluímos as novas colunas e os novos valores no comando INSERT
+        const sql = `INSERT INTO usuarios (nome, email, senha, data_nascimento) VALUES (?, ?, ?, ?)`;
+        const params = [nome, email, senhaHash, data_nascimento];
+
+        db.run(sql, params, function(err) {
+            if (err) {
+                console.error("Erro ao registrar:", err.message);
+                return res.status(400).json({ erro: "E-mail já cadastrado ou dados inválidos." });
+            }
+            res.json({ sucesso: true, mensagem: "Usuário criado com sucesso!", id: this.lastID });
         });
     } catch (e) {
         res.status(500).json({ erro: "Erro ao processar cadastro." });
@@ -306,6 +319,23 @@ app.get('/api/sugestoes', autenticarToken, async (req, res) => {
         console.error("Erro no Servidor:", error.message);
         res.status(500).json({ erro: "Erro ao processar receitas" });
     }
+});
+// Rota para buscar dados do perfil do usuário logado
+app.get('/api/usuario/meu-perfil', autenticarToken, (req, res) => {
+    // req.user.id vem do token decodificado no middleware autenticarToken
+    const userId = req.user.id;
+
+    db.get(`SELECT nome, email, data_nascimento FROM usuarios WHERE id = ?`, [userId], (err, user) => {
+        if (err) {
+            console.error("Erro ao buscar perfil:", err.message);
+            return res.status(500).json({ erro: "Erro no servidor ao buscar perfil." });
+        }
+        if (!user) {
+            return res.status(404).json({ erro: "Usuário não encontrado." });
+        }
+        // Retorna os dados para o frontend
+        res.json(user);
+    });
 });
 
 const PORT = 3000;
