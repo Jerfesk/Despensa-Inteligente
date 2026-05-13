@@ -3,13 +3,18 @@
 Contido em README.md
 
 #2. PADRÕES DE PROJETO (GoF)
+
 2.1 Singleton
+
 §	Categoria
 Criacional
+
 §	Problema resolvido
 Garantir uma única instância do banco de dados durante a execução do sistema.
+
 §	Aplicação no projeto
 O SQLite é inicializado apenas uma vez e reutilizado em todas as rotas da aplicação.
+
 §	UML
 
 +----------------------+
@@ -24,6 +29,7 @@ O SQLite é inicializado apenas uma vez e reutilizado em todas as rotas da aplic
 const db = new sqlite3.Database('./estoque.db', (err) => {
     if (err) console.error(err.message);
 });
+
 
 §	Justificativa
 A conexão com o banco é compartilhada globalmente no sistema, evitando múltiplas conexões desnecessárias.
