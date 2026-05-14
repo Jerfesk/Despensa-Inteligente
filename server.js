@@ -16,13 +16,13 @@ res.sendFile(path.join(__dirname, 'public', 'loginP.html'));  //pagina de login/
 app.use(express.static('public'));
 app.use(express.json());
 
-const API_KEY = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : undefined;
-console.log("CHAVE:", API_KEY); //pelo gpt
-const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_aqui';
+// const API_KEY = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : undefined;
+// console.log("CHAVE:", API_KEY); //pelo gpt
+// const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_aqui';
 
-if (!API_KEY) {
-    console.error("❌ ERRO: GEMINI_API_KEY não encontrada!");
-}
+// if (!API_KEY) {
+//     console.error("❌ ERRO: GEMINI_API_KEY não encontrada!");
+// }
 
 // --- BANCO DE DADOS ---
 const db = new sqlite3.Database('./estoque.db', (err) => {
